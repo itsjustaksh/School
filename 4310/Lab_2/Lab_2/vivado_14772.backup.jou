@@ -1,0 +1,19 @@
+#-----------------------------------------------------------
+# Vivado v2019.2.1 (64-bit)
+# SW Build 2729669 on Thu Dec  5 04:49:17 MST 2019
+# IP Build 2729494 on Thu Dec  5 07:38:25 MST 2019
+# Start of session at: Sun Nov  6 17:10:28 2022
+# Process ID: 14772
+# Current directory: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab 2/Lab_2
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent5868 C:\Users\googl\Documents\Anything Relevant\University\4th Year\4310\Labs\Lab 2\Lab_2\Lab_2.xpr
+# Log file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab 2/Lab_2/vivado.log
+# Journal file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab 2/Lab_2\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project {C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab 2/Lab_2/Lab_2.xpr}
+update_compile_order -fileset sources_1
+launch_simulation
+launch_simulation
+launch_runs synth_1 -jobs 8
+wait_on_run synth_1
+launch_simulation

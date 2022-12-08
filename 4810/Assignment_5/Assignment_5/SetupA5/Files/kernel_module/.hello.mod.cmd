@@ -1,0 +1,1 @@
+cmd_/home/seed/Share/Assignment_5/SetupA5/Files/kernel_module/hello.mod := { echo  /home/seed/Share/Assignment_5/SetupA5/Files/kernel_module/hello.o; echo; } > /home/seed/Share/Assignment_5/SetupA5/Files/kernel_module/hello.mod

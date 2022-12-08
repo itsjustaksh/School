@@ -1,0 +1,43 @@
+#-----------------------------------------------------------
+# Vivado v2019.2.1 (64-bit)
+# SW Build 2729669 on Thu Dec  5 04:49:17 MST 2019
+# IP Build 2729494 on Thu Dec  5 07:38:25 MST 2019
+# Start of session at: Mon Nov  7 10:47:12 2022
+# Process ID: 19092
+# Current directory: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab 2/Lab_2
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent4184 C:\Users\googl\Documents\Anything Relevant\University\4th Year\4310\Labs\Lab 2\Lab_2\Lab_2.xpr
+# Log file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab 2/Lab_2/vivado.log
+# Journal file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab 2/Lab_2\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project {C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab 2/Lab_2/Lab_2.xpr}
+update_compile_order -fileset sources_1
+launch_simulation
+source cache_tb.tcl
+relaunch_sim
+synth_design -rtl -name rtl_1
+relaunch_sim
+relaunch_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 8
+wait_on_run synth_1
+relaunch_sim
+relaunch_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 8
+wait_on_run synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 8
+wait_on_run synth_1
+open_run synth_1 -name synth_1
+launch_runs impl_1 -jobs 8
+wait_on_run impl_1
+add_files -fileset constrs_1 -norecurse {{C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Zybo-Master.xdc}}
+refresh_design
+reset_run synth_1
+launch_runs synth_1 -jobs 8
+wait_on_run synth_1
+close_design
+close_design
+open_run synth_1 -name synth_1
+close_sim

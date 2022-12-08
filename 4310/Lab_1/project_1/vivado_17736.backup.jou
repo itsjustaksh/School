@@ -1,0 +1,20 @@
+#-----------------------------------------------------------
+# Vivado v2019.2.1 (64-bit)
+# SW Build 2729669 on Thu Dec  5 04:49:17 MST 2019
+# IP Build 2729494 on Thu Dec  5 07:38:25 MST 2019
+# Start of session at: Tue Sep 27 12:54:31 2022
+# Process ID: 17736
+# Current directory: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/project_1
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent18428 C:\Users\googl\Documents\Anything Relevant\University\4th Year\4310\Lab 1\project_1\project_1.xpr
+# Log file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/project_1/vivado.log
+# Journal file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/project_1\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project {C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/project_1/project_1.xpr}
+update_compile_order -fileset sources_1
+launch_simulation
+source testbench.tcl
+close_sim
+launch_simulation
+source testbench.tcl
+close_sim

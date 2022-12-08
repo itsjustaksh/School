@@ -1,0 +1,14 @@
+p = 71
+q = 89
+e = 3
+n = 71*89 = 6319
+phi(n) = (p-1)*(q-1) = 6160
+A. d: multiplicative inverse of e in field phi=70*88=6160
+   1 = e * d mod phi; d = 4107
+B. m1 signature: c1 = m1 ^ d mod n = 5016 ^ 4107 mod 6319 = 156
+C. m2 signature: c2 = m2 ^ d mod n = 2097 ^ 4107 mod 6319 = 2784
+D. m1 = c1 ^ e mod phi = 156 ^ 3 mod 6319 = 156
+   m2 = c2 ^ e mod phi = 2784 ^ 3 mod 6319 = 2784
+E. c3 = (c1 * c2) mod n = 156 * 2784 mod 6319 = 4612
+F. m3 = m1 * m2 mod n = 3736; c3 ^ e mod n = 4612 ^ 3 mod 6319 = 3736
+ 
