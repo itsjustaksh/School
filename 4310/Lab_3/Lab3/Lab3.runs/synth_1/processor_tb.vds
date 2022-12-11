@@ -1,0 +1,57 @@
+#-----------------------------------------------------------
+# Vivado v2019.2.1 (64-bit)
+# SW Build 2729669 on Thu Dec  5 04:49:17 MST 2019
+# IP Build 2729494 on Thu Dec  5 07:38:25 MST 2019
+# Start of session at: Mon Dec  5 11:25:30 2022
+# Process ID: 19620
+# Current directory: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.runs/synth_1
+# Command line: vivado.exe -log processor_tb.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source processor_tb.tcl
+# Log file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.runs/synth_1/processor_tb.vds
+# Journal file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.runs/synth_1\vivado.jou
+#-----------------------------------------------------------
+source processor_tb.tcl -notrace
+create_project: Time (s): cpu = 00:00:03 ; elapsed = 00:00:08 . Memory (MB): peak = 451.160 ; gain = 157.473
+Command: synth_design -top processor_tb -part xc7z010clg400-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z010'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z010'
+INFO: Launching helper process for spawning children vivado processes
+INFO: Helper process launched with PID 26540 
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:04 ; elapsed = 00:00:05 . Memory (MB): peak = 714.188 ; gain = 238.887
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'processor_tb' [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor_tb.v:23]
+WARNING: [Synth 8-6896] event control except as first statement of always block inside initial block, initial block items will be ignored [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor_tb.v:70]
+INFO: [Synth 8-6157] synthesizing module 'processor' [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:23]
+INFO: [Synth 8-6157] synthesizing module 'control' [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/control.v:22]
+INFO: [Synth 8-155] case statement is not full and has no default [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/control.v:70]
+WARNING: [Synth 8-567] referenced signal 'rst' should be on the sensitivity list [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/control.v:60]
+INFO: [Synth 8-6155] done synthesizing module 'control' (1#1) [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/control.v:22]
+WARNING: [Synth 8-6104] Input port 'MRead_request' has an internal driver [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:58]
+WARNING: [Synth 8-6104] Input port 'MWrite_request' has an internal driver [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:59]
+WARNING: [Synth 8-6104] Input port 'RegRead' has an internal driver [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:60]
+WARNING: [Synth 8-6104] Input port 'RegWrite' has an internal driver [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:61]
+WARNING: [Synth 8-6104] Input port 'branchSig' has an internal driver [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:62]
+WARNING: [Synth 8-6104] Input port 'immGen' has an internal driver [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:63]
+WARNING: [Synth 8-6104] Input port 'op' has an internal driver [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:64]
+INFO: [Synth 8-6157] synthesizing module 'mem' [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/memory.v:23]
+WARNING: [Synth 8-567] referenced signal 'rst' should be on the sensitivity list [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/memory.v:50]
+WARNING: [Synth 8-567] referenced signal 'MAddress' should be on the sensitivity list [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/memory.v:50]
+WARNING: [Synth 8-567] referenced signal 'MWrite_data' should be on the sensitivity list [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/memory.v:50]
+INFO: [Synth 8-6155] done synthesizing module 'mem' (2#1) [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/memory.v:23]
+WARNING: [Synth 8-6104] Input port 'MRead_ready' has an internal driver [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:71]
+WARNING: [Synth 8-6104] Input port 'MWrite_done' has an internal driver [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:76]
+WARNING: [Synth 8-6104] Input port 'MRead_data' has an internal driver [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:77]
+ERROR: [Synth 8-27] wait statement not supported [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:175]
+INFO: [Synth 8-155] case statement is not full and has no default [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:141]
+ERROR: [Synth 8-6156] failed synthesizing module 'processor' [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor.v:23]
+ERROR: [Synth 8-6156] failed synthesizing module 'processor_tb' [C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab3/Lab3/Lab3.srcs/sources_1/new/processor_tb.v:23]
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:05 ; elapsed = 00:00:07 . Memory (MB): peak = 786.145 ; gain = 310.844
+---------------------------------------------------------------------------------
+synthesize failed
+INFO: [Common 17-83] Releasing license: Synthesis
+10 Infos, 15 Warnings, 0 Critical Warnings and 4 Errors encountered.
+synth_design failed
+ERROR: [Common 17-69] Command failed: Vivado Synthesis failed
+INFO: [Common 17-206] Exiting Vivado at Mon Dec  5 11:25:58 2022...

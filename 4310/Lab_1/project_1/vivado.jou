@@ -1,0 +1,36 @@
+#-----------------------------------------------------------
+# Vivado v2019.2.1 (64-bit)
+# SW Build 2729669 on Thu Dec  5 04:49:17 MST 2019
+# IP Build 2729494 on Thu Dec  5 07:38:25 MST 2019
+# Start of session at: Wed Sep 28 18:19:26 2022
+# Process ID: 20980
+# Current directory: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/project_1
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent23396 C:\Users\googl\Documents\Anything Relevant\University\4th Year\4310\Lab 1\project_1\project_1.xpr
+# Log file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/project_1/vivado.log
+# Journal file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/project_1\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project {C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/project_1/project_1.xpr}
+update_compile_order -fileset sources_1
+reset_run synth_1
+launch_runs synth_1 -jobs 8
+wait_on_run synth_1
+open_run synth_1 -name synth_1
+close_design
+set_property SOURCE_SET sources_1 [get_filesets sim_1]
+add_files -fileset sim_1 -norecurse {{C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/lab1_tb_template.v}}
+update_compile_order -fileset sim_1
+import_files -fileset sim_1 {{C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/lab1_tb_template.v}}
+# Disabling source management mode.  This is to allow the top design properties to be set without GUI intervention.
+set_property source_mgmt_mode None [current_project]
+set_property top my_circuit_tb [get_filesets sim_1]
+set_property top_lib xil_defaultlib [get_filesets sim_1]
+# Re-enabling previously disabled source management mode.
+set_property source_mgmt_mode All [current_project]
+update_compile_order -fileset sim_1
+launch_simulation
+source my_circuit_tb.tcl
+add_bp {C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/project_1/project_1.srcs/sim_1/imports/Lab 1/lab1_tb_template.v} 104
+remove_bps -file {C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/project_1/project_1.srcs/sim_1/imports/Lab 1/lab1_tb_template.v} -line 104
+open_run synth_1 -name synth_1
+close_sim

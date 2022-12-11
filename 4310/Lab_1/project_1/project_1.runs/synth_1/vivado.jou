@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2019.2.1 (64-bit)
+# SW Build 2729669 on Thu Dec  5 04:49:17 MST 2019
+# IP Build 2729494 on Thu Dec  5 07:38:25 MST 2019
+# Start of session at: Wed Sep 28 18:22:48 2022
+# Process ID: 5236
+# Current directory: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/project_1/project_1.runs/synth_1
+# Command line: vivado.exe -log testbench.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source testbench.tcl
+# Log file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/project_1/project_1.runs/synth_1/testbench.vds
+# Journal file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Lab 1/project_1/project_1.runs/synth_1\vivado.jou
+#-----------------------------------------------------------
+source testbench.tcl -notrace

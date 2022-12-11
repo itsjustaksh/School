@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2019.2.1 (64-bit)
+# SW Build 2729669 on Thu Dec  5 04:49:17 MST 2019
+# IP Build 2729494 on Thu Dec  5 07:38:25 MST 2019
+# Start of session at: Mon Nov  7 11:25:35 2022
+# Process ID: 21388
+# Current directory: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab 2/Lab_2/Lab_2.runs/synth_1
+# Command line: vivado.exe -log cache_tb.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source cache_tb.tcl
+# Log file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab 2/Lab_2/Lab_2.runs/synth_1/cache_tb.vds
+# Journal file: C:/Users/googl/Documents/Anything Relevant/University/4th Year/4310/Labs/Lab 2/Lab_2/Lab_2.runs/synth_1\vivado.jou
+#-----------------------------------------------------------
+source cache_tb.tcl -notrace
