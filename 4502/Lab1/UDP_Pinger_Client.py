@@ -1,31 +1,39 @@
 # UDP_Pinger_Server.py 
 
-# We will need the following module to generate randomized lost packets 
-
+# Need sys to read command line args
 from socket import * 
+from datetime import datetime
 import sys
 
-# Init socket
-clientSocket = socket(AF_INET, SOCK_DGRAM) 
+def client_packet_send(destAddr: str, destPort: int) -> None:
+    # Init socket
+    clientSocket = socket(AF_INET, SOCK_DGRAM) 
 
-# Read command line for destination port and address
-print(sys.argv[0])
-destAddr = sys.argv[1]
-destPort = int(sys.argv[2])
+    # set up socket using dest addr
+    clientSocket.bind(("127.0.0.1", 12001)) 
+    clientSocket.settimeout(1)
+    message = bytes("Message to send", 'ascii')
+    address = (destAddr, destPort)
 
-# set up socket using dest addr
-clientSocket.bind(('', destPort)) 
-clientSocket.settimeout(1000)
-message = "Message to send"
+    # Send 10 UDP Messages to dest provided at program launch
+    for i in range(0,10):
+        startTime = datetime.now()
+        clientSocket.sendto(message, address)
 
-# Send 10 UDP Messages
-for i in range(0,10):
-    # Send message to dest 
-    clientSocket.sendto(bytes(message, "ascii"), destAddr)
+        # wait for message response
+        # once available, gather info needed and print as shown in lab doc
+        try:
+            retMessage, retAddress = clientSocket.recvfrom(1024)
+            retTime = datetime.now()
+            current_time = retTime.strftime("%a %b %d %H:%M:%S %Y")
+            print("Reply from" + str(retAddress) + ": Ping " + str(i+1) + " " + current_time)
+            print("RTT: " + str(retTime - startTime))
+        except TimeoutError:
+            print("Request Timed Out")
 
-    # wait for message response
-    try:
-        message, destAddr = clientSocket.recvfrom(1024)
-    except TimeoutError:
-        print("Request Timed Out")
+if __name__ == "__main__":
+    # Read command line for destination port and address
+    destAddr = sys.argv[1]
+    destPort = int(sys.argv[2])
 
+    client_packet_send(destAddr, destPort)
