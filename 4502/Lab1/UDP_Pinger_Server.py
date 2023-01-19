@@ -13,6 +13,7 @@ serverSocket = socket(AF_INET, SOCK_DGRAM)
 serverSocket.bind(('127.0.0.1', 12000)) 
 
 print("Waiting for messages...")
+count = 0
 while True:
 	# Generate random number in the range of 0 to 9 
 	rand = random.randint(0, 9)   
@@ -31,3 +32,8 @@ while True:
 	serverSocket.sendto(message, address)
 	print("Sent Message: ")
 	print(message)
+
+	# Count messages sent
+	count += 1
+	if count >= 10:
+		exit()
