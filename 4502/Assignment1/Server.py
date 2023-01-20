@@ -61,7 +61,8 @@ class Server:
         return
 
 if __name__ == "__main__":
-    
+    port_num = None
+
     try:
         port_num = int(sys.argv[1])
     except ValueError as e:
