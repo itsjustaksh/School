@@ -16,7 +16,6 @@ header{
 h1{
     font-size: 225%;
     color: darkgreen;
-
 }
 
 p{
@@ -32,7 +31,7 @@ footer{
     display:block;
 	width: 100%;
     /* border: 7px solid #ff0000; */
-	border: 2px solid #e7e7e7;
+	border: 2px solid #4c4c4c;
 	background-color: #f3f3f3;
 	text-align: center;
 	overflow: hidden;
@@ -91,6 +90,8 @@ footer{
     margin-left: auto;
     margin-right: auto;
     width: 30%;
+    padding: 5px;
+    border: #303030 2px solid;
 }
 
 .nav-logo{
