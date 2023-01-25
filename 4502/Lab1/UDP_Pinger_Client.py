@@ -6,17 +6,20 @@ from datetime import datetime
 import sys
 
 def client_packet_send(destAddr: str, destPort: int) -> None:
-    # Init socket
-    clientSocket = socket(AF_INET, SOCK_DGRAM) 
 
     # set up socket using dest addr
-    clientSocket.bind(("127.0.0.1", 12001)) 
-    clientSocket.settimeout(1)
+    # clientSocket.bind(("127.0.0.1", 12001)) 
     message = bytes("Message to send", 'ascii')
     address = (destAddr, destPort)
 
     # Send 10 UDP Messages to dest provided at program launch
     for i in range(0,10):
+        # Init socket
+        clientSocket = socket(AF_INET, SOCK_DGRAM) 
+        clientSocket.bind((destAddr, 12001)) 
+        clientSocket.settimeout(2)
+
+        # Send message 
         startTime = datetime.now()
         clientSocket.sendto(message, address)
 
@@ -28,8 +31,11 @@ def client_packet_send(destAddr: str, destPort: int) -> None:
             current_time = retTime.strftime("%a %b %d %H:%M:%S %Y")
             print("Reply from" + str(retAddress) + ": Ping " + str(i+1) + " " + current_time)
             print("RTT: " + str(retTime - startTime))
-        except TimeoutError:
+        except:
             print("Request Timed Out")
+
+        clientSocket.close()
+    
 
 if __name__ == "__main__":
     # Read command line for destination port and address

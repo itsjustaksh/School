@@ -10,7 +10,7 @@ from socket import *
 serverSocket = socket(AF_INET, SOCK_DGRAM) 
 
 # Assign IP address and port number to socket 
-serverSocket.bind(('127.0.0.1', 12000)) 
+serverSocket.bind(('127.0.0.1', 62002)) 
 
 print("Waiting for messages...")
 count = 0
@@ -36,4 +36,5 @@ while True:
 	# Count messages sent
 	count += 1
 	if count >= 10:
+		serverSocket.close()
 		exit()
