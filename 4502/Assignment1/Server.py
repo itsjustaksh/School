@@ -1,6 +1,10 @@
-# Need sys to read command line args
+# SYSC 4502 Communications Software
+# Assignment 1
+# Author: Aksh Ravishankar
+
+# Imports
 from socket import *
-import sys, os
+import sys
 
 
 class Server:
@@ -17,7 +21,9 @@ class Server:
     # Conn vars
     port = None
     serverSocket = socket(AF_INET, SOCK_DGRAM)
-    def startUP(self, portNum=12000) -> None:
+    encoding = 'utf-8'
+
+    def __init__(self, portNum=62002) -> None:
         '''
         Initiate class and populate data structures from text files (database)
         '''
@@ -26,10 +32,10 @@ class Server:
 
         # Read text files, store info in data structure
 
-        ''' Read existing reservations at startup and store in dictionary. 
-         Use cars as keys, if car not in dict already, add with res value. Else 
-         if car in dict '''
-        
+        # Read existing reservations at startup and store in dictionary. 
+        #  Use cars as keys, if car not in dict already, add with res value. Else 
+        #  if car in dict add date to that car entry
+
         with open(self.resListFilepath, 'r') as resFile:
             for line in resFile:
                 line = line.strip().split(' ')
@@ -38,9 +44,9 @@ class Server:
                 else:
                     self.resDict[line[0]] += [line[1]]
 
-        '''
-        Read info from car list and date list files and store in local data structures
-        '''
+        
+        # Read info from car list and date list files and store in local data structures
+        
         with open(self.carListFilepath, 'r') as carFile:
             for car in carFile:
                 self.carList.append(car.strip())
@@ -49,99 +55,128 @@ class Server:
             for date in dateFile:
                 self.dateList.append(date.strip())
 
-        # Assign IP address and port number to socket 
-        # using loopback address
-        self.serverSocket.bind(('127.0.0.1', self.port)) 
+        print('Database loaded')
 
-        # Once initial setup is done, wait for requests
-        self.waitForRequests()
+        # Assign IP address and port number to socket
+        # using loopback address
+        try:
+            self.serverSocket.bind(('127.0.0.1', self.port))
+            print(f'Server running at 127.0.0.1 on port {self.port}')
+        except:
+            print("Connection error, could not start program")
+            exit(1)
 
     def waitForRequests(self) -> None:
         # Remain idle until requests arrive, handle requests as needed
-        # print(self.carList)
-        # print(self.dateList)
-        # print(self.resDict)
 
         socket = self.serverSocket
-        while True:    
+        while True:
             message, address = socket.recvfrom(1024)
+            message = str(message, self.encoding)
 
-            match message.split()[0]:
+            print(f'Recieved {message} from {address}')
+            # Run corresponding action based on message from client.
+            # Message is assumed to have the correct format, but not correct
+            # data.
+            match message.strip().split()[0].lower():
                 case 'cars':
                     returnMessage = self.composeCarMessage()
-                    socket.sendto(returnMessage, address)
-                
+
                 case 'dates':
                     returnMessage = self.composeDateMessage()
-                    socket.sendto(returnMessage, address)
-                
+
                 case 'check':
-                    returnMessage = self.composeResMessage()
-                    socket.sendto(returnMessage, address)
-                
+                    car = message.split()[1]
+                    
+                    returnMessage = self.composeResMessage(car)
+
                 case 'reserve':
-                    car = message.split[1]
-                    date = message.split[2]
-                    if car not in self.resDict.keys() and car not in self.carList:
-                        returnMessage = 'Invalid car'
-                        socket.sendto(bytes(returnMessage), address)
-                    if date not in self.dateList:
-                        returnMessage = 'Invalid reservation date'
-                        socket.sendto(bytes(returnMessage), address)
-                    
-                    self.addRes((car, date))
-                    
-                    socket.sendto(bytes('Reservation Confirmed'), address)
+                    car = message.split()[1]
+                    date = message.split()[2]
+
+                    returnMessage = self.addRes((car, date))
+                
                 case 'delete':
-                    
-                    # TODO: Implement delete code and function 
-                    
-                    socket.sendto(bytes('Reservation Deleted'), address)
+                    car = message.split()[1]
+                    date = message.split()[2]
+
+                    returnMessage = self.deleteRes(car, date)
 
                 case 'quit':
-
-                    # TODO: Implement quit code and function
-
-                    socket.sendto(bytes('Server shutting down'), address)
+                    socket.sendto(bytes('Server shutting down', self.encoding), address)
+                    socket.close()
+                    self.saveOnQuit()
                     return
 
+                case _:
+                    returnMessage = 'Invalid request'
+
+            socket.sendto(bytes(returnMessage, self.encoding), address)
 
     def composeCarMessage(self):
-        cList = self.carList
-        message = []
-        for c in cList:
-            message.append(bytes(c, 'utf-8'))
+        message = ''
+        for c in self.carList:
+            message += f'{c} '
         return message
 
     def composeDateMessage(self):
-        dList = self.dateList
-        message = []
-        for d in dList:
-            message.append(bytes(d, 'utf-8'))
+        message = ''
+        for d in self.dateList:
+            message += f'{d} '
         return message
-    
-    def composeResMessage(self):
-        resMessage = []
-        rList = self.resDict
-        resCars = rList.keys()
 
-        for car in resCars:
-            resMessage.append(bytes(car, 'utf-8'))
-            for res in rList[car]:
-                resMessage.append(bytes(res, 'utf-8'))
+    def composeResMessage(self, car):
+        message = ''
 
-        return resMessage
+        if car not in self.resDict.keys():
+            message = f'No Reservations for {car}'
+        else:
+            for res in self.resDict[car]:
+                message += f'{car} {res}\n'
 
-    def addRes(self, resMessage):
+        return message
+
+    def addRes(self, resMessage) -> bytes:
         car = resMessage[0]
         date = resMessage[1]
 
-        if car not in self.resDict.keys():
-            self.resDict[car] = [date]
+        if car not in self.carList:
+            returnMessage = 'Invalid car'
+        elif date not in self.dateList:
+            returnMessage = 'Invalid reservation date'
+        elif car in self.resDict.keys() and date in self.resDict[car]:
+            returnMessage = f'{car} unavailable on {date}, please pick a different car or date'
         else:
-            self.resDict[car] += [date]
+            returnMessage = 'Reservation Confirmed'
 
-        return
+            if car not in self.resDict.keys():
+                self.resDict[car] = [date]
+            else:
+                self.resDict[car] += [date]
+
+        return returnMessage
+
+    def deleteRes(self, car: str, date: str) -> bytes: 
+        if car not in self.carList:
+            returnMessage = 'Invalid car'
+        elif date not in self.dateList:
+            returnMessage = 'Invalid reservation date'
+        elif car not in self.resDict.keys() or date not in self.resDict[car]:
+            returnMessage = f'No reservation booked for {car} on {date}'
+        else:
+            i = self.resDict[car].index(date)
+            self.resDict[car].pop(i)
+            returnMessage = f'Reservation for {car} on {date} cancelled.'
+
+        return returnMessage
+
+    def saveOnQuit(self):
+        with open(self.resListFilepath, 'w') as resFile:
+            for car in self.resDict.keys():
+                for date in self.resDict[car]:
+                    resFile.write(f'{car} {date}\n')
+        
+        
 
 if __name__ == "__main__":
     port_num = None
@@ -153,6 +188,14 @@ if __name__ == "__main__":
     except IndexError as e:
         print("Missing port number")
         print("Usage: python Server.py <port number>")
+        exit(1)
     
-    server = Server()
-    server.startUP(port_num)
+    # Start server
+    server = Server(port_num)
+    try:
+        server.waitForRequests()
+    except Exception as e:
+        print(e)
+        print('Ran into error, saving file before closing')
+        server.saveOnQuit()
+    exit(0)

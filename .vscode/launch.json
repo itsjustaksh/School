@@ -5,12 +5,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: 4502 Labs",
+      "name": "Python: 4502 Work",
       "type": "python",
       "request": "launch",
       "program": "${file}",
-      "args": ["127.0.0.1", "62002"],
-      "cwd": "${workspaceFolder}\\4502\\Lab1",
+      "args": ["62002", "127.0.0.1"],
+      "cwd": "${workspaceFolder}\\4502\\Assignment1",
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -19,9 +19,7 @@
       "type": "python",
       "request": "launch",
       "program": "${file}",
-      "args": [
-        "12000"
-      ],
+      "args": ["12000"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "justMyCode": true
