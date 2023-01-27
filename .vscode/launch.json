@@ -9,7 +9,7 @@
       "type": "python",
       "request": "launch",
       "program": "${file}",
-      "args": ["62002", "127.0.0.1"],
+      "args": ["192.168.2.57", "62002"],
       "cwd": "${workspaceFolder}\\4502\\Assignment1",
       "console": "integratedTerminal",
       "justMyCode": true

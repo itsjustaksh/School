@@ -25,10 +25,11 @@ def client_packet_send(destAddr: str, destPort: int, message: str) -> None:
     # Init socket
     clientSocket = socket(AF_INET, SOCK_DGRAM)
     try:
-        clientSocket.bind((destAddr, 12001))
-        clientSocket.settimeout(2)
-    except:
+        clientSocket.bind(('127.0.0.1', 12001))
+        clientSocket.settimeout(1)
+    except Exception as e:
         print("Connection error, could not start program")
+        print(e)
         exit(1)
 
     # Send message
