@@ -97,7 +97,9 @@ label img{
    border-radius: 50%;
 }
 
-
+#new_post_input{
+   resize: both;
+}
 
 
 
