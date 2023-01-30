@@ -67,7 +67,10 @@ class Server:
             exit(1)
 
     def waitForRequests(self) -> None:
-        # Remain idle until requests arrive, handle requests as needed
+        '''
+        Remain idle until requests arrive, handle requests as needed. Once request has been handled, 
+        return to waiting for requests. If quit command arrives, shut down gracefully. 
+        '''
 
         socket = self.serverSocket
         while True:
@@ -77,7 +80,8 @@ class Server:
             print(f'Recieved {message} from {address}')
             # Run corresponding action based on message from client.
             # Message is assumed to have the correct format, but not correct
-            # data.
+            # data. 
+            # See function calls for detials of request handling 
             match message.strip().split()[0].lower():
                 case 'cars':
                     returnMessage = self.composeCarMessage()
@@ -114,18 +118,34 @@ class Server:
             socket.sendto(bytes(returnMessage, self.encoding), address)
 
     def composeCarMessage(self):
+        '''
+        Compose reply for cars command by returning a string of all the cars available
+        separated by spaces
+        '''
         message = ''
         for c in self.carList:
             message += f'{c} '
         return message
 
     def composeDateMessage(self):
+        '''
+        Compose reply for dates command by returning a string of all the dates available
+        for reservation separated by spaces
+        '''
         message = ''
         for d in self.dateList:
             message += f'{d} '
         return message
 
-    def composeResMessage(self, car):
+    def composeResMessage(self, car: str):
+        '''
+        Compose reply for check command by returning a string of all the reservations booked for 
+        for a specific car separated by spaces
+
+        Parameters: 
+            car: A string representing the car for which reservations are being checked
+        
+        '''
         message = ''
 
         if car not in self.resDict.keys():
@@ -137,6 +157,10 @@ class Server:
         return message
 
     def addRes(self, resMessage) -> bytes:
+        '''
+        Check to make sure reservation is valid and add to reservation list. If valid, return 
+        a confirmation message. If invalid, return a descriptive error message 
+        '''
         car = resMessage[0]
         date = resMessage[1]
 
@@ -157,6 +181,10 @@ class Server:
         return returnMessage
 
     def deleteRes(self, car: str, date: str) -> bytes: 
+        '''
+        Check to make sure reservation is valid and delete from reservation list. If valid, return 
+        a confirmation message. If invalid, return a descriptive error message.
+        '''
         if car not in self.carList:
             returnMessage = 'Invalid car'
         elif date not in self.dateList:
@@ -171,6 +199,10 @@ class Server:
         return returnMessage
 
     def saveOnQuit(self):
+        '''
+        Write contents of reservation management dictionary to file, remove existing content of file and 
+        replace with content from server execution. 
+        '''
         with open(self.resListFilepath, 'w') as resFile:
             for car in self.resDict.keys():
                 for date in self.resDict[car]:

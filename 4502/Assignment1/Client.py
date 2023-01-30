@@ -47,11 +47,13 @@ def client_packet_send(destAddr: str, destPort: int, message: str) -> None:
 
 
 def test_api(destAddr, destPort):
+    # Sequence of messages to test with
     messages = ['cars', 'dates', 'check BMWX1', 'reserve BMWX1 Wednesday-2023-02-08', 'check BMWX1',
                 'delete BMWX1 Wednesday-2023-02-08', 'check BMWX1', 'reserve BMWX1 Sunday-2023-02-19', 
                 'reserve BMWX1 Sunday-2023-02-19', 'check BMWX1', 'delete beemer Sunday-2023-02-19', 
                 'reserve BMWX1 Cloosday-2023-02-19', 'check BMWX1', 'delete BMWX1 Sunday-2023-02-19', 'quit']
 
+    # Send each message in sequence and print response, wait half a second between responses
     for message in messages:
         print(f'Request: {message}\nResponse:')
         client_packet_send(destAddr, destPort, message)
