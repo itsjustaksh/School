@@ -1,29 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
-<head >
-   <meta charset="utf-8">
-   <title>Update SYSCBOOK profile</title>
-   <link rel="stylesheet" href="assets/css/reset.css" />
-   <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-<body>
-   <header>
-      <h1>SYSCBOOK</h1>
-      <p>Social media for SYSC students in Carleton University</p>
-   </header>
-   <nav>
-   </nav>
+	<head>
+		<meta charset="utf-8" />
+		<title>Update SYSCBOOK profile</title>
+		<link rel="stylesheet" href="assets/css/reset.css" />
+		<link rel="stylesheet" href="assets/css/style.css" />
+	</head>
+	<body>
+		<header>
+			<h1>SYSCBOOK</h1>
+			<p>Social media for SYSC students in Carleton University</p>
+		</header>
+		<nav></nav>
 
-   <main>
-      <section>
-         <h2>Update Profile information</h2>
-         <form>
-            <fieldset>
-               <legend><p>Personal information</p></legend>
-
-            </fieldset>
-         </form>
-      </section>
-   </main>
-</body>
+		<main>
+			<section>
+				<h2>Update Profile information</h2>
+				<form>
+					<fieldset>
+						<table>
+							<tbody>
+								<tr>
+									<td colspan="3">
+										<legend><p>Personal information</p></legend>
+									</td>
+								</tr>
+								<tr>
+									<td class="profile-rows">
+										<label><p>First Name:</p></label>
+										<input type="text" />
+									</td>
+									<td class="profile-rows">
+										<label><p>Last Name:</p></label>
+										<input type="text" />
+									</td>
+									<td class="profile-rows">
+										<label><p>Date of Birth:</p></label>
+										<input type="date" name="DOB" id="profile_dob_input" />
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</fieldset>
+					<fieldset>
+						<table>
+							<tbody>
+								<tr>
+									<td colspan="3">
+										<legend><p>Address</p></legend>
+									</td>
+								</tr>
+								<tr>
+									<td class="profile-rows">
+										<label><p>Street Number:</p></label>
+										<input type="number" />
+									</td>
+									<td class="profile-rows" colspan="2">
+										<label><p>Street Name:</p></label>
+										<input type="text" />
+									</td>
+								</tr>
+								<tr>
+									<td class="profile-rows">
+										<label><p>City:</p></label>
+										<input type="text" />
+									</td>
+									<td class="profile-rows">
+										<label><p>Province:</p></label>
+										<input type="text" />
+									</td>
+									<td class="profile-rows">
+										<label><p>Postal Code:</p></label>
+										<input type="text" />
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</fieldset>
+					<fieldset>
+						<table>
+							<tbody>
+								<tr>
+									<td>
+										<legend><p>Profile information</p></legend>
+									</td>
+								</tr>
+								<tr>
+									<td class="profile-rows">
+										<label><p>Email address:</p></label>
+										<input type="email" />
+									</td>
+                           <td>
+                              <label><p>Program:</p></label>
+										<select name="Program">
+                                 <option>Choose Program</option>
+                                 <option>Computer Systems Engineering</option>
+                                 <option>Software Engineering</option>
+                                 <option>Communications Engineering</option>
+                                 <option>Biomedical and Electrical Engineering</option>
+                                 <option>Electrical Engineering</option>
+                                 <option>Special</option>
+                              </select>
+                           </td>
+								</tr>
+							</tbody>
+						</table>
+					</fieldset>
+				</form>
+			</section>
+		</main>
+	</body>
 </html>

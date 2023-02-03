@@ -48,7 +48,7 @@ legend {
    color: #E8EAF6;
    text-transform: uppercase;
    width: 100%;
-   margin-top: 5px;
+   margin-top: 0px;
    padding: 5px 0;
 }
 legend p{
@@ -97,17 +97,59 @@ label img{
    border-radius: 50%;
 }
 
+table{
+   border-spacing: 0;
+   position: relative;
+   width: 100%;
+}
 
+.post{
+   border: gray 2px solid;
+   margin: 1em 0;
+   padding: 1em;
+   color: #545e90;
+}
+
+.post h1{
+   font-size: 1.2em;
+   color: #1A237E;
+}
 
 #new_post_input{
    resize: vertical;
    display: block;
-   margin: 1em auto;
+   margin: 1em 2em;
    border: #545e90 2px solid;
-   border-radius: 15px;
-   box-shadow: 4px 4px 5px #0071a5, -4px -4px 5px #0071a5;
+   box-shadow: 2px 2px 3px #0071a5, -2px -2px 3px #0071a5;
 }
 
+.navbar{
+   background-color: whitesmoke;
+   position: fixed;
+   height: 100%;
+   width: auto;
+   overflow: auto;
+   margin: 0 0 0 4em;
+}
 
+.navbar li a{
+   padding: 1em 2em;
+   display: block;
+   width: 100%;
+   text-decoration: none;
+}
+
+.navbar li a:hover{
+   background-color: #545e90;
+}
+
+.buttons{
+   display: block;
+   margin: auto;
+}
+
+.profile-rows{
+   display: inline-flex;
+}
 
 
