@@ -1,28 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
-<head >
-   <meta charset="utf-8">
-   <title>Register on SYSCBOOK</title>
-   <link rel="stylesheet" href="assets/css/reset.css" />
-   <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-<body>
-   <header>
+  <head>
+    <meta charset="utf-8" />
+    <title>Register on SYSCBOOK</title>
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header>
       <h1>SYSCBOOK</h1>
       <p>Social media for SYSC students in Carleton University</p>
-   </header>
-   <nav>
-   </nav>
-   <main>
+    </header>
+    <nav>
+      <ul class="navbar">
+        <li>
+          <a href="index.html"><strong>Home</strong></a>
+        </li>
+        <li>
+          <a href="profile.html"><strong>Profile</strong></a>
+        </li>
+        <li>
+          <a href="register.html"><strong>Register</strong></a>
+        </li>
+        <!-- TODO: Fill this link -->
+        <li>
+          <a href=""><strong>Logout</strong></a>
+        </li>
+      </ul>
+    </nav>
+    <main>
       <section>
-         <h2>Register a new profile</h2>
-         <form>
-            <fieldset>
-               <legend><p>Personal information</p></legend>
-
-            </fieldset>
-         </form>
+        <h2>Register a new profile</h2>
+        <form method="post" action="phpScripts/process_register.php">
+          <fieldset>
+            <table>
+              <tbody>
+                <tr>
+                  <td colspan="3">
+                    <legend><p>Personal information</p></legend>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="profile-rows">
+                     <label><p>First Name:</p></label>
+                     <input type="text" />
+                   </td>
+                   <td class="profile-rows">
+                     <label><p>Last Name:</p></label>
+                     <input type="text" />
+                   </td>
+                   <td class="profile-rows">
+                     <label><p>Date of Birth:</p></label>
+                     <input type="date" name="DOB" id="profile_dob_input" />
+                   </td>
+                </tr>
+              </tbody>
+            </table>
+          </fieldset>
+          <fieldset>
+            <table>
+              <tbody>
+                <tr>
+                  <td colspan="5">
+                    <legend><p>Profile information</p></legend>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="profile-rows">
+                    <label><p>Email address:</p></label>
+                    <input type="email" />
+                  </td>
+                </tr>
+                <tr>
+                  <td class="profile-rows">
+                    <label><p>Program:</p></label>
+                    <select name="Program">
+                      <option>Choose Program</option>
+                      <option>Computer Systems Engineering</option>
+                      <option>Software Engineering</option>
+                      <option>Communications Engineering</option>
+                      <option>Biomedical and Electrical Engineering</option>
+                      <option>Electrical Engineering</option>
+                      <option>Special</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input type="submit" value="Register" />
+					<input type="reset" value="Reset">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </fieldset>
+        </form>
       </section>
-   </main>
-</body>
+    </main>
+  </body>
 </html>
