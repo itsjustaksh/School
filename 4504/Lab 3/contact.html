@@ -1,39 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Contact Us</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css" />
     <link rel="icon" href="images/images/XBOX_logo.png" />
-</head>
-<body>
+  </head>
+  <body>
     <header id="home_link_dest">
-        <h1 class="page-title">Xbox Info Hub</h1>
-        <h2>By: Aksh Ravishankar</h2>
-        <time datetime="2023-01-23 17:25">Monday Jan 23, 2023</time>
-      </header>
-      <div id="top_nav">
-        <nav>
-          <ul>
-            <li><a href="#home_link_dest">Home</a></li>
-            <li><a href="#catalog_link_dest">Catalog</a></li>
-            <li>
-              <a href="https://www.microsoft.com/en-ca">
-                <img
-                  src="images/Microsoft_logo.png"
-                  alt="Microsoft Logo"
-                  class="nav-logo"
-                />
-                Company Website</a
-              >
-            </li>
-            <li>
-              <a href=""
-                >Contact Us</a
-              >
-            </li>
-          </ul>
-        </nav>
+      <h1 class="page-title">Xbox Info Hub</h1>
+      <h2>By: Aksh Ravishankar</h2>
+      <time datetime="2023-01-23 17:25">Monday Jan 23, 2023</time>
+    </header>
+    <div id="top_nav">
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="catalog.html">Catalog</a></li>
+          <li>
+            <a href="https://www.microsoft.com/en-ca">
+              <img
+                src="images/Microsoft_logo.png"
+                alt="Microsoft Logo"
+                class="nav-logo"
+              />
+              Company Website</a
+            >
+          </li>
+          <li>
+            <a href="contact.html">Contact Us</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <main>
+      <div class="contact-form">
+        <form
+          action="https://ramisabouni.com/sysc4504/Lab03_process.php"
+          method="post"
+        >
+          <fieldset>
+            <legend>Contact Us</legend>
+            <label for="input">Enter email address: </label>
+            <input type="email" />
+            <br />
+            <br />
+            <label for="select">Choose your province: </label>
+            <select name="Select province" id="province-select">
+              <option value="AB">AB</option>
+              <option value="BC">ON</option>
+              <option value="SK">SK</option>
+              <option value="MB">MB</option>
+              <option value="ON">ON</option>
+              <option value="QC">QC</option>
+              <option value="NS">NS</option>
+              <option value="NB">NB</option>
+              <option value="NL">NL</option>
+              <option value="PE">PE</option>
+              <option value="YK">YK</option>
+              <option value="NT">NT</option>
+              <option value="NU">NU</option>
+            </select>
+            <br />
+            <br />
+            <p>Reason for contacting us:</p>
+            <ul>
+              <li>
+                <input type="radio" name="contact-reason-radio" />
+                <label for="input">Billing</label>
+              </li>
+              <li>
+                <input type="radio" name="contact-reason-radio" />
+                <label for="input">General Inquiry</label>
+              </li>
+              <li>
+                <input type="radio" name="contact-reason-radio" />
+                <label for="input">Technical Issue</label>
+              </li>
+              <li>
+                <input type="radio" name="contact-reason-radio" />
+                <label for="input">Track Shipment</label>
+              </li>
+              <li>
+                <input type="radio" name="contact-reason-radio" />
+                <label for="input">Other</label>
+              </li>
+            </ul>
+            <label for="textarea">Message:</label><br />
+            <textarea
+              name="contact-message"
+              id="contact_message"
+              placeholder="Enter message here"
+            ></textarea>
+            <br />
+            <input type="submit" value="Submit" />
+          </fieldset>
+        </form>
       </div>
-</body>
+    </main>
+    <hr id="bottom_line" />
+    <footer>
+      Copyright &copy; Aksh Ravishankar - Carleton University
+      <a href="mailto:akshravishankar@cmail.carleton.ca">
+        akshravishankar@cmail.carleton.ca
+      </a>
+    </footer>
+  </body>
 </html>
