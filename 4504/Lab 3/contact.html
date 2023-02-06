@@ -42,12 +42,12 @@
         >
           <fieldset>
             <legend>Contact Us</legend>
-            <label for="input">Enter email address: </label>
-            <input type="email" />
+            <label for="email-input-field">Enter email address: </label>
+            <input type="email" id="email-input-field" name="email_address"/>
             <br />
             <br />
-            <label for="select">Choose your province: </label>
-            <select name="Select province" id="province-select">
+            <label for="province-select">Choose your province: </label>
+            <select name="province" id="province-select">
               <option value="AB">AB</option>
               <option value="BC">ON</option>
               <option value="SK">SK</option>
@@ -67,29 +67,29 @@
             <p>Reason for contacting us:</p>
             <ul>
               <li>
-                <input type="radio" name="contact-reason-radio" />
-                <label for="input">Billing</label>
+                <input type="radio" name="reason" id="Billing" value="Billing"/>
+                <label for="Billing">Billing</label>
               </li>
               <li>
-                <input type="radio" name="contact-reason-radio" />
-                <label for="input">General Inquiry</label>
+                <input type="radio" name="reason" id="General" value="General"/>
+                <label for="General" >General Inquiry</label>
               </li>
               <li>
-                <input type="radio" name="contact-reason-radio" />
-                <label for="input">Technical Issue</label>
+                <input type="radio" name="reason" id="Technical" value="Technical"/>
+                <label for="Technical">Technical Issue</label>
               </li>
               <li>
-                <input type="radio" name="contact-reason-radio" />
-                <label for="input">Track Shipment</label>
+                <input type="radio" name="reason" id="Track" value="Track"/>
+                <label for="Track">Track Shipment</label>
               </li>
               <li>
-                <input type="radio" name="contact-reason-radio" />
-                <label for="input">Other</label>
+                <input type="radio" name="reason" id="Other" value="Other"/>
+                <label for="Other">Other</label>
               </li>
             </ul>
-            <label for="textarea">Message:</label><br />
+            <label for="contact_message">Message:</label><br />
             <textarea
-              name="contact-message"
+              name="question"
               id="contact_message"
               placeholder="Enter message here"
             ></textarea>
