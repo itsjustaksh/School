@@ -10,7 +10,7 @@
       "request": "launch",
       "program": "${file}",
       "args": ["192.168.2.57", "62002"],
-      "cwd": "${workspaceFolder}\\4502\\Assignment1",
+      "cwd": "${workspaceFolder}\\4502\\Lab3",
       "console": "integratedTerminal",
       "justMyCode": true
     },
