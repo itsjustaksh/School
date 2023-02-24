@@ -5,12 +5,27 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: 4502 Work",
+      "name": "Python: 4502 Client",
       "type": "python",
       "request": "launch",
-      "program": "${file}",
-      "args": ["192.168.2.57", "62002"],
-      "cwd": "${workspaceFolder}\\4502\\Lab3",
+      "program": "Client.py",
+      "args": [
+        "127.0.0.1",
+        "62002"
+      ],
+      "cwd": "${workspaceFolder}\\4502\\Assignment2",
+      "console": "externalTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Python: 4502 Server",
+      "type": "python",
+      "request": "launch",
+      "program": "Server.py",
+      "args": [
+        "62002"
+      ],
+      "cwd": "${workspaceFolder}\\4502\\Assignment2",
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -19,7 +34,9 @@
       "type": "python",
       "request": "launch",
       "program": "${file}",
-      "args": ["12000"],
+      "args": [
+        "12000"
+      ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "justMyCode": true
