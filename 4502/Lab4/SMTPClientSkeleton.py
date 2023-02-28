@@ -39,7 +39,7 @@ clientSocket.send("MAIL FROM:<noreply@mailserver.tld>\r\n".encode())
 try:
 	resp = clientSocket.recv(1024).decode()
 	if '250' not in resp:
-		print("Bad request, 250 reply not recieved")
+		print("Bad MAIL FROM request, 250 reply not recieved")
 	else:
 		print(resp)
 except TimeoutError as t:
@@ -51,11 +51,12 @@ except TimeoutError as t:
 
 #Fill in start   
 
-clientSocket.send("RCPT TO\r\n")
+clientSocket.send("RCPT TO:<unreads@othermailserver.tld>\r\n".encode())
 try:
 	resp = clientSocket.recv(1024).decode()
 	if '250' not in resp:
-		print("Bad request, 250 reply not recieved")
+		print("Bad RCPT TO request, 250 reply not recieved")
+		print(resp)
 	else:
 		print(resp)
 except TimeoutError as t:
@@ -66,11 +67,24 @@ except TimeoutError as t:
 
 #Fill in start   
 
+clientSocket.send("DATA\r\n".encode())
+try:
+	resp = clientSocket.recv(1024).decode()
+	if '354' not in resp:
+		print("Bad DATA request, 354 reply not recieved")
+		print(resp)
+	else:
+		print(resp)
+except TimeoutError as t:
+	print("DATA Timeout, no response")
+
 #Fill in end 
 
 # Send message data.
 
 #Fill in start   
+
+clientSocket.send(f"{msg}\r\n".encode())
 
 #Fill in end 
 
@@ -78,10 +92,32 @@ except TimeoutError as t:
 
 #Fill in start   
 
+clientSocket.send(".\r\n".encode())
+try:
+	resp = clientSocket.recv(1024).decode()
+	if '250' not in resp:
+		print("Bad request, 250 reply not recieved")
+		print(resp)
+	else:
+		print(resp)
+except TimeoutError as t:
+	print("Message end Timeout, no response")
+
 #Fill in end 
 
 # Send QUIT command and get server response.
 
 #Fill in start   
+
+clientSocket.send("QUIT\r\n".encode())
+try:
+	resp = clientSocket.recv(1024).decode()
+	if '221' not in resp:
+		print("Bad QUIT request, 221 reply not recieved")
+		print(resp)
+	else:
+		print(resp)
+except TimeoutError as t:
+	print("QUIT Timeout, no response")
 
 #Fill in end 
