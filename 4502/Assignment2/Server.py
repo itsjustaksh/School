@@ -33,12 +33,13 @@ class Server:
         # Assign IP address and port number to socket
         # using loopback address
         try:
-            self.serverSocket.bind((self.mulGroup, self.port))
-            print(f'Server running at {self.src} on port {self.port}, ')
-
+            self.serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
             group = inet_aton(self.mulGroup)
             bytePack = struct.pack('4sL', group, INADDR_ANY)
             self.serverSocket.setsockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, bytePack)
+            self.serverSocket.bind((self.mulGroup, self.port))
+
+            print(f'Server running at {self.src} on port {self.port}, ')
         except:
             print("Connection error, could not start program")
             exit(1)
@@ -55,7 +56,6 @@ class Server:
         print('Database loaded')
 
         listenSocket = self.serverSocket
-        listenSocket.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
         portCounter = self.port
         while True:
             try:
