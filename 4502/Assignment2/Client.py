@@ -8,14 +8,9 @@
 from socket import *
 import sys
 import time
-import traceback
-
-encoding = 'utf-8'
 
 
 def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket: socket) -> None:
-
-    global encoding
 
     # set up socket using dest addr
     address = (destAddr, destPort)
@@ -32,6 +27,12 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
         print(e)
         print("Request Timed Out")
 
+    while 1:
+        try:
+            clientSocket.recv(2048)
+        except TimeoutError:
+            return
+
 
 def start_client_UI(destAddr, destPort, test):
     # Sequence of messages to test with
@@ -42,29 +43,14 @@ def start_client_UI(destAddr, destPort, test):
 
     # Init socket
     clientSocket = socket(AF_INET, SOCK_DGRAM)
-    clientSocket.settimeout(5)
-    clientSocket.sendto('newCon'.encode(), (destAddr, destPort))
-    while 1:
-        try:
-            # Get connection information
-            newPort, addr = clientSocket.recvfrom(1024)
-            newPort = int(newPort.decode())
-            break
-
-        except ValueError:
-            clientSocket.sendto('newCon'.encode(), (destAddr, destPort))
-            continue
-        except TimeoutError as e:
-            print("Connection error, could not start program")
-            print(e)
-            exit(1)
+    clientSocket.settimeout(11)
 
     # Start comms
     if test:
     # Send each message in sequence and print response, wait half a second between responses
         for message in messages:
             print(f'Request: {message}\nResponse:')
-            client_packet_send(addr[0], newPort, message, clientSocket)
+            client_packet_send(destAddr, destPort, message, clientSocket)
             time.sleep(0.5)
 
         clientSocket.close()
@@ -73,7 +59,7 @@ def start_client_UI(destAddr, destPort, test):
         while (1):
             commandToSend = input("Insert command to send: ")
 
-            client_packet_send(addr[0], newPort, message, clientSocket)
+            client_packet_send(destAddr, destPort, message, clientSocket)
             if 'quit' in commandToSend.lower():
                 clientSocket.close()
                 return

@@ -38,7 +38,7 @@ class Server:
             self.serverSocket.settimeout(5)
             self.serverSocket.bind(('', self.port))
 
-            print(f'Starting Server...')
+            print(f'Starting Server... \nWait until "Database loaded" is printed to start other Servers/Clients')
         except:
             print("Connection error, could not start program")
             exit(1)
@@ -46,9 +46,8 @@ class Server:
 
     def connect(self, dataList): 
         '''
-        Open a socket to recieve connections and wait for connections. As they come in, 
-        accept and create thread to deal with them. Thread will have it's own socket for 
-        dedicated communication with client. Also set up multicast thread to communicate 
+        Open a socket to recieve connections and wait for requests. As they come in, 
+        accept and create thread to deal with them. Also use multicast to communicate 
         with other servers for file updates
         '''
 
@@ -65,33 +64,16 @@ class Server:
                 if  'Update File' in message.decode():
                     self.saveData(dataList)
                     listenSocket.sendto(f'{get_native_id()}: DB updated'.encode(), (self.mulGroup, self.port))
-
-                elif 'newCon' in message.decode():
-                    print(f'Conn request from {ip} on port {portIn}')
-
-                    # Tell conn to connect to new port for dedicated comms, use 
-                    # counter to find next port number
-                    portCounter += 1
-                    newConn = socket(AF_INET, SOCK_DGRAM)
-                    newConn.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-                    newConn.bind(('', portCounter))
-                    newConn.settimeout(3)
-
-                    print(f'Establishing connection with {ip} using local port {portCounter}.\nBeginning comms in new thread.\n\n')
-                    
-                    listenSocket.sendto(f'{portCounter}'.encode(), (ip, portIn))
-
-                    # Create thread to deal with request 
-                    newThread = Thread(target=self.waitForRequests, args=(dataList, newConn, ip, portIn, ))
-                    newThread.start()
-                    self.threads.append(newThread)
-
                 elif 'DB updated' in message.decode():
                     continue
 
                 else:
-                    print("Unknown message, dropping")
-                    continue
+                    print(f'Request {message} from {ip} on port {portIn}, starting new thread')
+
+                    # Create thread to deal with request 
+                    newThread = Thread(target=self.waitForRequests, args=(dataList, message.decode(), ip, portIn, listenSocket))
+                    newThread.start()
+                    self.threads.append(newThread)
 
             except TimeoutError:
                 try:
@@ -103,71 +85,65 @@ class Server:
         for t in self.threads:
             t.join()
 
-    def waitForRequests(self, dataList, connSocket, dest, port) -> None:
+    def waitForRequests(self, dataList, message, dest, port, connSocket) -> None:
         '''
         Remain idle until requests arrive, handle requests as needed. Once request has been handled, 
         return to waiting for requests. If quit command arrives, shut down gracefully. 
         '''
 
-        while True:
+        if event.is_set():
+            print('Keyboard interrupt recieved, shutting down thread.')
+            self.saveData(dataList)
+            return
 
-            if event.is_set():
-                break
-
-            message = connSocket.recv(1024)
-            message = message.decode()
-
-            print(f'Recieved {message} from {dest} on port {port}')
-            # Run corresponding action based on message from client.
-            # Message is assumed to have the correct format, but not correct
-            # data. 
-            # See function calls for detials of request handling
-            match message.strip().split()[0].lower():
-                case 'cars':
-                    returnMessage = self.composeCarMessage(dataList)
-
-                case 'dates':
-                    returnMessage = self.composeDateMessage(dataList)
-
-                case 'check':
-                    car = message.split()[1]
-                    
-                    returnMessage = self.composeResMessage(car, dataList)
-
-                case 'reserve':
-                    car = message.split()[1]
-                    date = message.split()[2]
-
-                    returnMessage = self.addRes((car, date), dataList)
-                
-                case 'delete':
-                    car = message.split()[1]
-                    date = message.split()[2]
-
-                    returnMessage = self.deleteRes(car, date, dataList)
-
-                case 'quit':
-                    connSocket.sendto('Connection terminated.'.encode(), (dest,port))
-                    connSocket.close()
-                    self.saveData(dataList)
-
-                    print(f"Closing connection with {dest} on {port}")
-
-                    # Exit thread
-                    return 
-
-                case _:
-                    returnMessage = 'Invalid request'
-                    continue
-
-            if self.delayOn:
-                delay = randint(a=5, b=10)
-                sleep(delay)
-            print(f'Sending response: {returnMessage}')
-            connSocket.sendto(returnMessage.encode(), (dest,port))
         
-        print('Keyboard interrupt recieved, shutting down.')
-        self.saveData(dataList)
+        # Run corresponding action based on message from client.
+        # Message is assumed to have the correct format, but not correct
+        # data. 
+        # See function calls for detials of request handling
+        match message.strip().split()[0].lower():
+            case 'cars':
+                returnMessage = self.composeCarMessage(dataList)
+
+            case 'dates':
+                returnMessage = self.composeDateMessage(dataList)
+
+            case 'check':
+                car = message.split()[1]
+                
+                returnMessage = self.composeResMessage(car, dataList)
+
+            case 'reserve':
+                car = message.split()[1]
+                date = message.split()[2]
+
+                returnMessage = self.addRes((car, date), dataList)
+            
+            case 'delete':
+                car = message.split()[1]
+                date = message.split()[2]
+
+                returnMessage = self.deleteRes(car, date, dataList)
+
+            case 'quit':
+                connSocket.sendto('Connection terminated.'.encode(), (dest,port))
+                self.saveData(dataList)
+
+                print(f"Closing connection with {dest} on {port}, thread ending")
+
+                # Exit thread
+                return 
+
+            case _:
+                returnMessage = 'Invalid request'
+                return
+
+        if self.delayOn:
+            delay = randint(a=5, b=10)
+            sleep(delay)
+        print(f'Sending response: {returnMessage}\nThread ending\n')
+        connSocket.sendto(returnMessage.encode(), (dest,port))
+        
         return
 
     def composeCarMessage(self, dataList):
