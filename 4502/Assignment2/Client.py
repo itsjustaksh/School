@@ -21,7 +21,7 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
     address = (destAddr, destPort)
 
     # Send message
-    clientSocket.send(message.encode())
+    clientSocket.sendto(message.encode(), address)
 
     # wait for message response
     # once available, gather info needed and print as shown in lab doc
@@ -33,7 +33,7 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
         print("Request Timed Out")
 
 
-def test_client(destAddr, destPort):
+def start_client_UI(destAddr, destPort, test):
     # Sequence of messages to test with
     messages = ['cars', 'dates', 'check BMWX1', 'reserve BMWX1 Wednesday-2023-02-08', 'check BMWX1',
                 'delete BMWX1 Wednesday-2023-02-08', 'check BMWX1', 'reserve BMWX1 Sunday-2023-02-19', 
@@ -42,63 +42,43 @@ def test_client(destAddr, destPort):
 
     # Init socket
     clientSocket = socket(AF_INET, SOCK_DGRAM)
-    clientSocket.bind(('127.0.0.1', ))
+    clientSocket.settimeout(5)
+    clientSocket.sendto('newCon'.encode(), (destAddr, destPort))
+    while 1:
+        try:
+            # Get connection information
+            newPort, addr = clientSocket.recvfrom(1024)
+            newPort = int(newPort.decode())
+            break
 
-    try:
-        # Get connection information
-        clientSocket.sendto('newCon'.encode(), (destAddr, destPort))
-        newPort, addr = clientSocket.recvfrom(1024)
-        newPort = int(newPort.decode())
-        clientSocket.close()
+        except ValueError:
+            clientSocket.sendto('newCon'.encode(), (destAddr, destPort))
+            continue
+        except TimeoutError as e:
+            print("Connection error, could not start program")
+            print(e)
+            exit(1)
 
-        # Connect to server
-        clientSocket = socket(AF_INET, SOCK_STREAM)
-        clientSocket.connect((destAddr, newPort))
-    except Exception as e:
-        print("Connection error, could not start program")
-        print(e)
-        traceback.print_exc()
-        exit(1)
-
+    # Start comms
+    if test:
     # Send each message in sequence and print response, wait half a second between responses
-    for message in messages:
-        print(f'Request: {message}\nResponse:')
-        client_packet_send(destAddr, destPort, message, clientSocket)
-        time.sleep(0.5)
+        for message in messages:
+            print(f'Request: {message}\nResponse:')
+            client_packet_send(addr[0], newPort, message, clientSocket)
+            time.sleep(0.5)
 
-    clientSocket.close()
-
-def startClientUI(destAddr, destPort):
-
-    # Init socket
-    clientSocket = socket(AF_INET, SOCK_DGRAM)
-
-    try:
-        # Connect to server
-        clientSocket.sendto('newCon'.encode(), (destAddr, destPort))
-        newPort = clientSocket.recv(1024)
-        newPort = int(newPort.decode())
         clientSocket.close()
+    else:
+        # Get user input to send messages
+        while (1):
+            commandToSend = input("Insert command to send: ")
 
-        # Recieve new port to send to
-        # Connect to server
-        clientSocket = socket(AF_INET, SOCK_STREAM)
-        clientSocket.bind(('127.0.0.1', 12001))
-        clientSocket.connect((destAddr, newPort))
-    except Exception as e:
-        print("Connection error, could not start program")
-        print(e)
-        exit(1)
-
-    while (1):
-        commandToSend = input("Insert command to send: ")
-
-        client_packet_send(destAddr, destPort, commandToSend, clientSocket)
-        time.sleep(0.5)
-
-        if 'quit' in commandToSend:
-            clientSocket.close()
-            return
+            client_packet_send(addr[0], newPort, message, clientSocket)
+            if 'quit' in commandToSend.lower():
+                clientSocket.close()
+                return
+            
+            time.sleep(0.5)
 
 if __name__ == "__main__":
     # Read command line for destination port and address
@@ -113,10 +93,6 @@ if __name__ == "__main__":
         exit(1)
 
     test = 1
-
-    if test:
-        test_client(destAddr, destPort)
-        exit(0)
-    else:
-        startClientUI(destAddr, destPort)
-        exit(0)
+    start_client_UI(destAddr, destPort, test)
+    exit(0)
+    

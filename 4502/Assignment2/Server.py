@@ -9,7 +9,6 @@ import struct
 from threading import Lock, Thread, Event, get_native_id
 import sys
 from time import sleep
-from tracemalloc import start
 
 event = Event()
 dataLock = Lock()
@@ -22,7 +21,6 @@ class Server:
         '''
         
         self.port = portNum
-        self.src = '127.0.0.1'
         self.mulGroup = mulIP
         self.serverSocket = socket(AF_INET, SOCK_DGRAM)
         self.encoding = 'utf-8'
@@ -37,9 +35,10 @@ class Server:
             group = inet_aton(self.mulGroup)
             bytePack = struct.pack('4sL', group, INADDR_ANY)
             self.serverSocket.setsockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, bytePack)
-            self.serverSocket.bind((self.mulGroup, self.port))
+            self.serverSocket.settimeout(5)
+            self.serverSocket.bind(('', self.port))
 
-            print(f'Server running at {self.src} on port {self.port}, ')
+            print(f'Starting Server...')
         except:
             print("Connection error, could not start program")
             exit(1)
@@ -62,35 +61,44 @@ class Server:
                 # Wait for conn and accept
                 message, (ip, portIn) = listenSocket.recvfrom(1024)
 
-                # Generously update file on any incoming messages that aren't asking for 
-                # a new connection. 
-                # Safer to update file more frequently than asked over creating 
-                # new threads and sockets for connections that don't exist
-                if message != 'newConn':
+
+                if  'Update File' in message.decode():
                     self.saveData(dataList)
-                    listenSocket.sendto(f'{get_native_id()}: DB updated'.encode(), (ip, portIn))
-                else:
+                    listenSocket.sendto(f'{get_native_id()}: DB updated'.encode(), (self.mulGroup, self.port))
+
+                elif 'newCon' in message.decode():
                     print(f'Conn request from {ip} on port {portIn}')
 
                     # Tell conn to connect to new port for dedicated comms, use 
                     # counter to find next port number
                     portCounter += 1
-                    newConn = socket(AF_INET, SOCK_STREAM)
-                    newConn.bind((self.src, portCounter))
+                    newConn = socket(AF_INET, SOCK_DGRAM)
+                    newConn.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+                    newConn.bind(('', portCounter))
+                    newConn.settimeout(3)
 
+                    print(f'Establishing connection with {ip} using local port {portCounter}.\nBeginning comms in new thread.\n\n')
+                    
                     listenSocket.sendto(f'{portCounter}'.encode(), (ip, portIn))
 
-                    newConn.listen()
-                    newSocket, (dest, port) = newConn.accept()
-                    print(f'Established connection with {dest} on port {port}.\nBeginning comms in new thread.\n\n')
-
                     # Create thread to deal with request 
-                    newThread = Thread(target=self.waitForRequests, args=(dataList, newSocket, dest, portCounter, ))
+                    newThread = Thread(target=self.waitForRequests, args=(dataList, newConn, ip, portIn, ))
                     newThread.start()
                     self.threads.append(newThread)
-            except KeyboardInterrupt:
-                event.set()
-                break
+
+                elif 'DB updated' in message.decode():
+                    continue
+
+                else:
+                    print("Unknown message, dropping")
+                    continue
+
+            except TimeoutError:
+                try:
+                    continue
+                except KeyboardInterrupt:
+                    event.set()
+                    break
 
         for t in self.threads:
             t.join()
@@ -139,21 +147,24 @@ class Server:
                     returnMessage = self.deleteRes(car, date, dataList)
 
                 case 'quit':
-                    connSocket.send('Connection terminated.'.encode())
+                    connSocket.sendto('Connection terminated.'.encode(), (dest,port))
                     connSocket.close()
                     self.saveData(dataList)
+
+                    print(f"Closing connection with {dest} on {port}")
 
                     # Exit thread
                     return 
 
                 case _:
                     returnMessage = 'Invalid request'
+                    continue
 
             if self.delayOn:
                 delay = randint(a=5, b=10)
                 sleep(delay)
             print(f'Sending response: {returnMessage}')
-            connSocket.send(returnMessage.encode())
+            connSocket.sendto(returnMessage.encode(), (dest,port))
         
         print('Keyboard interrupt recieved, shutting down.')
         self.saveData(dataList)
@@ -258,17 +269,28 @@ class Server:
     def start(self):
         # Send multicast message and wait for all clear to read text 
         # files with updated info
+
+        print("Checking for active servers before reading file")
         pid = get_native_id()
         multicast_addr = (self.mulGroup, self.port)
         self.serverSocket.setsockopt(IPPROTO_IP, IP_MULTICAST_TTL, struct.pack('b', 1))
         self.serverSocket.sendto(f'{pid}: Update File'.encode(), multicast_addr)
 
-        message, addr = self.serverSocket.recvfrom(1024)
-        while(pid in message.decode()):
-            message, addr = self.serverSocket.recvfrom(1024)
+        # Wait for multicast responses, if valid or timeout, start. 
+        message = self.serverSocket.recv(1024)
+        try:
+            while(str(pid) in message.decode()):
+                message = self.serverSocket.recv(1024)
+            if "DB updated" not in message.decode():
+                raise(ValueError)
+            print("Recieved file update notification")
+        except ValueError:
+            print(f"Bad reply from multicast server, cannot start system\nReceived: {message}")
+            self.serverSocket.close()
+            return None
+        except TimeoutError:
+            print("No servers responded to broadcast, starting assuming file is ready")
 
-        if 'DB updated' not in message:
-            start()
         
         # Filepaths to read initial information from and update
         carListFilepath = r'cars.txt'
@@ -321,7 +343,7 @@ if __name__ == "__main__":
         port_num = int(sys.argv[2])
     except ValueError as e:
         print("Invalid port number: ", sys.argv[1])
-        exit(2)
+        print("Using default 62002")
     except IndexError as e:
         print("Missing required positional arguments")
         print("Usage: python Server.py <multicast IP> <port number>")
@@ -331,15 +353,17 @@ if __name__ == "__main__":
     server = Server(portNum=port_num, mulIP=mulCastIP)
     try:
         data = server.start()
-        server.connect(data)
+        if data:
+            server.connect(data)
     except Exception as e:
         print(e)
-        print('Ran into error, saving file before closing')
+        print('Ran into fatal error, saving db before shutting down')
         
     try:
-        server.saveData(data)
+        if data:
+            server.saveData(data)
     except:
-        print('Could not save file')
+        print('Could not save db, db may not be loaded')
 
     print("Server Shutting Down")
     exit(0)
