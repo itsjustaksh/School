@@ -141,7 +141,7 @@ class Server:
         if self.delayOn:
             delay = randint(a=5, b=10)
             sleep(delay)
-        print(f'Sending response: {returnMessage}\nThread ending\n')
+        print(f'Sending response and closing thread\n')
         connSocket.sendto(returnMessage.encode(), (dest,port))
         
         return
