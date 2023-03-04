@@ -331,6 +331,8 @@ if __name__ == "__main__":
         data = server.start()
         if data:
             server.connect(data)
+    except KeyboardInterrupt:
+        server.saveData(data)
     except Exception as e:
         print(e)
         print('Ran into fatal error, saving db before shutting down')
