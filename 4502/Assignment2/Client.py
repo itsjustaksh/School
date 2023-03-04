@@ -78,7 +78,7 @@ if __name__ == "__main__":
         print('Missing arguments. Usage: \'python Client.py <Dest Addr> <Port Num>\'')
         exit(1)
 
-    test = 1
+    test = 0
     start_client_UI(destAddr, destPort, test)
     exit(0)
     
