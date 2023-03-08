@@ -1,2 +1,2 @@
-C:\Users\googl>mklink /J "C:\xampp\htdocs\SYSC_4504\Lab 4" "C:\Users\googl\Documents\Anything Relevant\University\4th Year\Code\4504\Lab 4"
-Junction created for C:\xampp\htdocs\SYSC_4504\Lab 4 <<===>> C:\Users\googl\Documents\Anything Relevant\University\4th Year\Code\4504\Lab 4
+C:\Users\googl>mklink /J "C:\xampp\htdocs\SYSC_4504" "C:\Users\googl\Documents\Anything Relevant\University\4th Year\Code\4504"
+Junction created for C:\xampp\htdocs\SYSC_4504 <<===>> C:\Users\googl\Documents\Anything Relevant\University\4th Year\Code\4504
