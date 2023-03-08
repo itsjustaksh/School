@@ -59,7 +59,7 @@ def start_client_UI(destAddr, destPort, test):
         while (1):
             commandToSend = input("Insert command to send: ")
 
-            client_packet_send(destAddr, destPort, message, clientSocket)
+            client_packet_send(destAddr, destPort, commandToSend, clientSocket)
             if 'quit' in commandToSend.lower():
                 clientSocket.close()
                 return

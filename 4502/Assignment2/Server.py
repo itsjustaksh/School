@@ -26,7 +26,7 @@ class Server:
         self.encoding = 'utf-8'
         self.threads = []
         self.resListFilepath = 'reservations.txt'
-        self.delayOn = False
+        self.delayOn = True
 
         # Assign IP address and port number to socket
         # using loopback address
