@@ -1,0 +1,171 @@
+body{
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #ccc;
+}
+
+header{
+    /* border: 3px; */
+    padding-top: 1px;
+    padding-bottom: 10px;
+    background-color: #303030;
+    color: whitesmoke;
+    text-align: center;
+    width: 100%;
+}
+
+h1{
+    font-size: 225%;
+    color: darkgreen;
+}
+
+h3{
+    font-size: 1.5em;
+    color: #303030;
+    margin: 0.5rem;
+    text-decoration: underline;
+}
+
+p{
+    text-align: justify;
+}
+
+footer{
+    text-align: center;
+    font-size: small;
+}
+
+table{
+    /* display: block; */
+    position: relative;
+    width: auto;
+    margin: auto;
+    padding: 0;
+    border-spacing: 0;
+}
+
+table>tbody>tr{
+    border: none;
+    margin: 0;
+    padding: 0;
+    border-spacing: 0;
+}
+
+table>tbody>tr>td{
+    /* border: 1px black solid; */
+    padding: 0;
+    margin: 0;
+}
+table>tbody>tr>td>img{
+    margin: 0;
+    padding: 0;
+    border: 0;
+    display: block;
+}
+
+#top_nav>nav{
+    display:block;
+	width: 100%;
+    /* border: 7px solid #ff0000; */
+	border: 2px solid #4c4c4c;
+	background-color: #f3f3f3;
+	text-align: center;
+	overflow: hidden;
+	position: -webkit-sticky; /* Safari */
+	position: sticky;
+	top: 0;
+}
+
+#top_nav>nav>ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#top_nav>nav>ul>li{
+    float: left;
+}
+
+#top_nav>nav>ul>li a{
+    display: block;
+    color: #333;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+#top_nav>nav>ul>li a:active{
+    color: whitesmoke;
+	background-color: darkgreen;
+}
+
+#top_nav>nav>ul>li a:hover:not(.active) {
+	background-color: #ccc;
+}
+
+#bottom_line{
+    margin: 3px;
+    border: 1px solid #333;
+    border-radius: 10px;
+}
+
+#contact_message{
+    height: 5rem;
+    width: 80%;
+}
+
+.page-title{
+    font-size: 350%;
+    color: whitesmoke;
+}
+
+.content{
+    display: block;
+    border: #303030 solid 2px;
+    margin: 0px 10px 0px 10px;
+    padding: 2%;
+    width: 100%;
+}
+
+.catalog-content{
+    display: block;
+    margin: 3em auto;
+    width: 90%;
+    padding: 1em;
+    border: #696969 2px solid;
+}
+
+.xbox-image{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 30%;
+    padding: 5px;
+    border: #303030 2px solid;
+}
+
+.nav-logo{
+    height: 14px;
+}
+
+.bars{
+    display: block;
+    width: fit-content;
+    border-top: 2px #303030 solid;
+    border-bottom: 2px #303030 solid;
+    margin: 0;
+    text-decoration: none;
+}
+
+.contact-form{
+    display: block;
+    margin: auto;
+    width: 85%;
+    border: #929292 2px solid;
+    margin-top: 1em;
+}
+
+.contact-form ul{
+    list-style: none;
+    padding: 0;
+}
