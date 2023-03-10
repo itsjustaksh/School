@@ -1,4 +1,5 @@
 {
     "python.analysis.typeCheckingMode": "off",
     "terminal.integrated.defaultProfile.windows": "Windows PowerShell",
+    "php.validate.executablePath": "C:\\xampp\\php\\php.exe",
 }
