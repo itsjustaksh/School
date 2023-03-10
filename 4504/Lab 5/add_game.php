@@ -45,35 +45,74 @@
 
 		<?php
 
-			include("connection.php");
+		include("connection.php");
 
-			if (isset($_POST['game_name'])) {
-				$conn = new mysqli($serverName, $username, $pass, $dbName);
+		if (isset($_POST['game_name'])) {
+			$conn = new mysqli($serverName, $username, $pass, $dbName);
 
-				if ($conn->connect_error) {
-					die("Error: Couldn't connect to database.<br>" . $conn->connect_error);
-				}
-
-				echo("Connected to Database!<br>");
-
-				$name = $_POST["game_name"];
-				$date = $_POST["release_date"];
-				$price = $_POST["game_price"];
-				$desc = $_POST["game_description"];
-
-				$addLine = "INSERT INTO student (game_name, release_date, game_price, game_description) 
-					VALUES ('$name', '$date', '$price', '$desc')";
-
-				try {
-					$conn->query($addLine);
-				} catch (\Throwable $th) {
-					echo("Could not add entry, SQL error: $th");
-				}
-				
-
+			if ($conn->connect_error) {
+				die("Error: Couldn't connect to database.<br>" . $conn->connect_error);
 			}
 
 		?>
+
+			<p>Connected to Database!</p>
+
+			<?php
+			$name = $_POST["game_name"];
+			$date = $_POST["release_date"];
+			$price = $_POST["game_price"];
+			$desc = $_POST["game_description"];
+
+			$addLine = "INSERT INTO game_details (game_name, release_date, game_price, game_description) 
+					VALUES ('$name', '$date', '$price', '$desc')";
+
+			try {
+				$conn->query($addLine);
+			} catch (\Throwable $th) {
+				echo ("Could not add entry, SQL error: $th");
+			}
+			?>
+
+			<h2>Game Record Created Successfully!</h2>
+			<div class="game-table-div">
+				<table class="game-table">
+				<thead>
+					<tr>
+						<td><strong>#</strong></td>
+						<td><strong>Game ID</strong></td>
+						<td><strong>Game Name</strong></td>
+						<td><strong>Release Date</strong></td>
+						<td><strong>Game Price</strong></td>
+						<td><strong>Game Description</strong></td>
+					</tr>
+				</thead>
+				<tbody>
+				<?php
+				$fetchLine = 'SELECT * FROM game_details';
+
+				$lines = $conn->query($fetchLine);
+				$count = 0;
+				foreach ($lines as $line) {
+					$count++;
+					$newRow = "<tr>
+							<td><p>{$count}</p></td>
+							<td><p>{$line["game_ID"]}</p></td>
+							<td><p>{$line["game_name"]}</p></td>
+							<td><p>{$line["release_date"]}</p></td>
+							<td><p>{$line["game_price"]}</p></td>
+							<td><p>{$line["game_description"]}</p></td>
+						   </tr>";
+
+					print($newRow);
+				}
+			}
+				?>
+				</tbody>
+			</table>
+			</div>
+			
+
 	</div>
 	<div class="footer">
 		<hr id="bottom_line" />
