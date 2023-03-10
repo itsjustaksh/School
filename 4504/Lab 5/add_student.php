@@ -32,13 +32,6 @@
 <?php
 
     include("connection.php");
-    $conn = new mysqli($serverName, $username, $pass, $dbName);
-
-    if ($conn->connect_error) {
-        die("Error: Couldn't connect to database.<br>" . $conn->connect_error);
-    }
-
-    echo("Connected successfully<br>");
 
     $name = 0;
     $id = 0;
@@ -47,20 +40,43 @@
     $courseID = 0;
 
     if (isset($_POST["Name"])) {
+        $conn = new mysqli($serverName, $username, $pass, $dbName);
+
+        if ($conn->connect_error) {
+            die("Error: Couldn't connect to database.<br>" . $conn->connect_error);
+        }
+
+        echo("Connected to Database!<br>");
+
         $name = $_POST["Name"];
         $id = $_POST["ID"];
         $DOB = $_POST["DOB"];
         $income = $_POST["Income"];
         $courseID = $_POST["CourseID"];
 
-        $sqlLine = "INSERT INTO student (ID, NAME, DOB, INCOME, COURSE_ID) VALUES (
+        $addLine = "INSERT INTO student (ID, NAME, DOB, INCOME, COURSE_ID) VALUES (
             '$id', '$name', '$DOB', '$income', '$courseID')";
     
         //TODO: Add content to db
         try {
-            $conn -> query($sqlLine);
+            $conn -> query($addLine);
+            echo("Successfully Registered!<br><hr>");
         } catch (Exception $th) {
-            echo("Could not add entry, sql error");
+            echo("Could not add entry, SQL error: $th");
+        }
+
+        try {
+            $fetchLine = "SELECT * FROM student WHERE ID='$id'";
+            $res = $conn -> query($fetchLine) -> fetch_assoc();
+
+            if ($res) {
+                echo("Submitted Info: <br>");
+                foreach ($res as $key => $value) {
+                    print("{$key}: {$value}<br>");
+                }
+            }
+        } catch (Throwable $th) {
+            echo("Could not display results. <br>SQL Error: $th");
         }
     }
 

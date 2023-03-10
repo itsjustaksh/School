@@ -1,7 +1,7 @@
 -- Create db
 CREATE DATABASE IF NOT EXISTS aksh_ravi_lab05 -- Q1: Create student info table with corresponding columns and datatypes
 CREATE TABLE STUDENT_INFO (
-    ID INT,
+    ID INT NOT NULL PRIMARY KEY,
     NAME VARCHAR(100),
     DOB DATE,
     INCOME DECIMAL(10, 2),
@@ -127,3 +127,12 @@ SELECT * FROM course;
 -- Drop tables
 DROP TABLE student; SELECT * FROM student;
 DROP TABLE course; SELECT * FROM course;
+
+-- Part 4: Create game table
+CREATE TABLE game_details (
+    game_ID INT(10) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    game_name VARCHAR(100),
+    release_date DATE,
+    game_price DECIMAL(10, 2),
+    game_description TEXT
+);
