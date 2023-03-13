@@ -56,27 +56,27 @@
 
 		?>
 
-			<p>Connected to Database!</p>
+		<p>Connected to Database!</p>
 
-			<?php
-			$name = $_POST["game_name"];
-			$date = $_POST["release_date"];
-			$price = $_POST["game_price"];
-			$desc = $_POST["game_description"];
+		<?php
+		$name = $_POST["game_name"];
+		$date = $_POST["release_date"];
+		$price = $_POST["game_price"];
+		$desc = $_POST["game_description"];
 
-			$addLine = "INSERT INTO game_details (game_name, release_date, game_price, game_description) 
-					VALUES ('$name', '$date', '$price', '$desc')";
+		$addLine = "INSERT INTO game_details (game_name, release_date, game_price, game_description) 
+				VALUES ('$name', '$date', '$price', '$desc')";
 
-			try {
-				$conn->query($addLine);
-			} catch (\Throwable $th) {
-				echo ("Could not add entry, SQL error: $th");
-			}
-			?>
+		try {
+			$conn->query($addLine);
+		} catch (\Throwable $th) {
+			echo ("Could not add entry, SQL error: $th");
+		}
+		?>
 
-			<h2>Game Record Created Successfully!</h2>
-			<div class="game-table-div">
-				<table class="game-table">
+		<h2>Game Record Created Successfully!</h2>
+		<div class="game-table-div">
+			<table class="game-table">
 				<thead>
 					<tr>
 						<td><strong>#</strong></td>
@@ -89,20 +89,20 @@
 				</thead>
 				<tbody>
 				<?php
-				$fetchLine = 'SELECT * FROM game_details';
+				$fetchLine = 'SELECT * FROM game_details ORDER BY release_date';
 
 				$lines = $conn->query($fetchLine);
 				$count = 0;
 				foreach ($lines as $line) {
 					$count++;
 					$newRow = "<tr>
-							<td><p>{$count}</p></td>
-							<td><p>{$line["game_ID"]}</p></td>
-							<td><p>{$line["game_name"]}</p></td>
-							<td><p>{$line["release_date"]}</p></td>
-							<td><p>{$line["game_price"]}</p></td>
-							<td><p>{$line["game_description"]}</p></td>
-						   </tr>";
+						<td><p>{$count}</p></td>
+						<td><p>{$line["game_ID"]}</p></td>
+						<td><p>{$line["game_name"]}</p></td>
+						<td><p>{$line["release_date"]}</p></td>
+						<td><p>{$line["game_price"]}</p></td>
+						<td><p>{$line["game_description"]}</p></td>
+						</tr>";
 
 					print($newRow);
 				}
@@ -110,8 +110,8 @@
 				?>
 				</tbody>
 			</table>
-			</div>
-			
+		</div>
+
 
 	</div>
 	<div class="footer">
