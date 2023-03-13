@@ -36,9 +36,9 @@
       "request": "launch",
       "program": "${file}",
       "args": [
-        "12000"
+        "127.0.0.1"
       ],
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}\\4502\\Lab5",
       "console": "integratedTerminal",
       "justMyCode": true
     }
