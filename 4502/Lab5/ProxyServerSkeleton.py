@@ -77,7 +77,7 @@ def foo():
 					tmpFile = open("./" + filetouse,"w")
 
 					# Fill in start
-					tmpFile.write(response.decode().partition("/html")[2])
+					tmpFile.write(response.decode().partition("/html")[2].strip())
 					tmpFile.close()
 					c.close()
 					# Fill in end
