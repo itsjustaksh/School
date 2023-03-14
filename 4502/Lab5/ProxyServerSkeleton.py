@@ -79,6 +79,7 @@ def foo():
 					# Fill in start
 					tmpFile.write(response.decode().partition("/html")[2])
 					tmpFile.close()
+					c.close()
 					# Fill in end
 				except:
 					print("Illegal request")
@@ -94,8 +95,9 @@ def foo():
 		# Close the client and the server sockets    
 
 		# Fill in start
-		tcpCliSock.close()	
+		tcpCliSock.close()
 		# Fill in end
+	tcpSerSock.close()
 
 if __name__ == '__main__':
 	try:
