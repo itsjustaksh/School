@@ -8,7 +8,7 @@ if len(sys.argv) <= 1:
 	
 # Create a server socket, bind it to a port and start listening
 tcpSerSock = socket(AF_INET, SOCK_STREAM)
-tcpSerSock.bind((sys.argv[1], 62002))
+tcpSerSock.bind((sys.argv[1], 8888))
 tcpSerSock.settimeout(3)
 tcpSerSock.listen()
 # Fill in start
@@ -26,7 +26,7 @@ def foo():
 			raise KeyboardInterrupt
 		print('Received a connection from:', addr)
 		message = tcpCliSock.recv(1024) # Fill in start    # Fill in end
-		print(message)
+		# print(message)
 		# suppress processing of requests for favicon
 		if message.split()[1].decode() == "/favicon.ico":
 			print("Suppress request for favicon")
@@ -70,7 +70,9 @@ def foo():
 					
 					# Fill in start
 					response = c.recv(4096)
-					tcpCliSock.send(response)
+					tcpCliSock.send("HTTP/1.0 200 OK\r\n".encode())
+					tcpCliSock.send("Content-Type:text/html\r\n\r\n".encode())
+					tcpCliSock.send(response.partition("/html".encode())[2])
 					# Fill in end
 
 					# Create a new file in the cache for the requested file. Also send the response in the buffer to client socket and the corresponding file in the cache
