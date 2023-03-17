@@ -5,6 +5,7 @@
     <title>Register on SYSCBOOK</title>
     <link rel="stylesheet" href="assets/css/reset.css" />
     <link rel="stylesheet" href="assets/css/style.css" />
+    <?php include("connection.php") ?>
   </head>
   <body>
     <header>
@@ -14,23 +15,23 @@
     <nav>
       <ul class="navbar">
         <li>
-          <a href="index.html"><strong>Home</strong></a>
+          <a href="index.php"><strong>Home</strong></a>
         </li>
         <li>
-          <a href="profile.html"><strong>Profile</strong></a>
+          <a href="profile.php"><strong>Profile</strong></a>
         </li>
         <li>
-          <a href="register.html"><strong>Register</strong></a>
+          <a href="register.php"><strong>Register</strong></a>
         </li>
         <li>
-          <a href="index.html"><strong>Logout</strong></a>
+          <a href="index.php"><strong>Logout</strong></a>
         </li>
       </ul>
     </nav>
     <main>
       <section>
         <h2>Register a new profile</h2>
-        <form method="POST" action="https://ramisabouni.com/sysc4504/process_register.php">
+        <form method="POST" action="">
           <fieldset>
             <table>
               <tbody>
@@ -87,14 +88,15 @@
                 </tr>
                 <tr>
                   <td>
-                    <input type="submit" value="Register" />
-                    <input type="reset" value="Reset" />
+                    <input type="submit" value="Register" name="submit"/>
+                    <input type="reset" value="Reset" name="reset"/>
                   </td>
                 </tr>
               </tbody>
             </table>
           </fieldset>
         </form>
+        <?php processRegister(); ?>
       </section>
     </main>
   </body>

@@ -14,16 +14,16 @@
     <nav>
       <ul class="navbar">
         <li>
-          <a href="index.html"><strong>Home</strong></a>
+          <a href="index.php"><strong>Home</strong></a>
         </li>
         <li>
-          <a href="profile.html"><strong>Profile</strong></a>
+          <a href="profile.php"><strong>Profile</strong></a>
         </li>
         <li>
-          <a href="register.html"><strong>Register</strong></a>
+          <a href="register.php"><strong>Register</strong></a>
         </li>
         <li>
-          <a href="index.html"><strong>Logout</strong></a>
+          <a href="index.php"><strong>Logout</strong></a>
         </li>
       </ul>
     </nav>
