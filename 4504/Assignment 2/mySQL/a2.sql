@@ -1,4 +1,4 @@
-USE aksh_ravi_syscbook;
+CREATE DATABASE aksh_ravi_syscbook
 CREATE TABLE users_info (
 	student_id INT(10) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     student_email VARCHAR(150),
@@ -33,5 +33,3 @@ CREATE TABLE users_posts (
     post_date TIMESTAMP,
     FOREIGN KEY(student_id) REFERENCES users_info(student_id)
 );
-
-
