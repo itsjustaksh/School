@@ -81,7 +81,7 @@
                   </td>
                   <td class="profile-rows">
                     <label><p>Province:</p></label>
-                    <input name="provence" type="text" />
+                    <input name="province" type="text" />
                   </td>
                   <td class="profile-rows">
                     <label><p>Postal Code:</p></label>
