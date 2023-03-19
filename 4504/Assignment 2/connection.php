@@ -19,7 +19,7 @@
     {
         if (isset($_POST['submit'])) {
             $infoQuery = "INSERT INTO users_info (student_email, f_name, l_name, bday) VALUES (?,?,?,?);";
-            $progQuery = "INSERT INTO users_program (program) VALUES (?);";
+            $progQuery = "INSERT INTO users_program (student_id, program) VALUES (?,?);";
             
             $conn = connect();
 
@@ -29,23 +29,34 @@
             $email = $_POST['student_email'];
             $program = $_POST['Program'];
 
-            $toDB = $conn->prepare($infoQuery);
-            $toDB->bind_param("ssss", ...[$email, $fName, $lName, $dob]);
+            try {
+                $toDB = $conn->prepare($infoQuery);
+                $toDB->bind_param("ssss", ...[$email, $fName, $lName, $dob]);
 
-            $toDB->execute();
+                $toDB->execute();
 
-            $toDB = $conn->prepare($progQuery);
-            $toDB->bind_param("s", $program);
+                $idQuery = "SELECT student_id FROM users_info WHERE student_email = '$email' AND 
+                            f_name = '$fName' AND l_name = '$lName' AND bday = '$dob'";
 
-            $toDB->execute();
+                $newID = $conn->query($idQuery)->fetch_assoc();
+
+                $toDB = $conn->prepare($progQuery);
+                $toDB->bind_param("is", $newID['student_id'], $program);
+
+                $toDB->execute();
+
+                echo "Success!";
+            } catch (\Throwable $th) {
+                echo("<br>SQL ERROR: {$th}");
+            }
 
             $toDB->close();
             $conn->close();
         }
     }
 
-    // function processProfile()
-    // {
+    function processProfile()
+    {
         
-    // }
+    }
 ?>

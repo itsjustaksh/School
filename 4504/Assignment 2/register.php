@@ -31,7 +31,7 @@
     <main>
       <section>
         <h2>Register a new profile</h2>
-        <form method="POST" action="">
+        <form method="POST" action="profile.php">
           <fieldset>
             <table>
               <tbody>
