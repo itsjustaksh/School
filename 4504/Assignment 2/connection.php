@@ -126,12 +126,63 @@
 
                 echo("Done!");
             } catch (\Throwable $th) {
-                echo "ERROR: $th";
+                echo("<br>ERROR: {$th}");
+                die(1);
             }
-            
-            $conn = connect();
+
+            $toDB->close();
+            $conn->close();
         }
     }
 
-    
+    function showPosts(){
+        $conn = connect();
+        $postQuery = "SELECT * FROM users_posts ORDER BY post_id DESC LIMIT 3";
+        $results = $conn->query($postQuery);
+        while ($row = $results->fetch_assoc()){
+            $postID = $row['post_id'];
+            $postContent = $row['new_post'];
+            $postTimestamp = $row['post_date'];
+
+            $userID = $row['student_id'];
+            $userInfo = $conn->query("SELECT * FROM users_info WHERE student_id='$userID'")->fetch_assoc();
+            $username = $userInfo['f_name'] . " " . $userInfo['l_name'];
+
+            $postStructure = "<details open class='post'> <summary>Post $postID</summary>
+                            <br>
+                            <p>$postContent</p>
+                            <p>Posted By: $username On: $postTimestamp</p></details>";
+            print($postStructure);
+        }
+    }
+
+    function processNewPost()
+    {
+        if (isset($_POST['new_post'])) {
+            $postQuery = "INSERT INTO users_posts (student_id, new_post, post_date) VALUES (?,?,?);";
+
+            $postContent = $_POST['new_post'];
+            $fName = $_POST['first_name'];
+            $lName = $_POST['last_name'];
+            $dob = $_POST['DOB'];
+
+            $idQuery = "SELECT student_id FROM users_info 
+                WHERE f_name = '$fName' AND l_name = '$lName' AND bday = '$dob'";
+            $conn = connect();
+
+            try {
+                $id = $conn->query($idQuery)->fetch_assoc();
+
+                $toDB = $conn->prepare($postQuery);
+                $toDB->bind_param("iss", ...[$id['student_id'], $postContent, date('h:i "on" dd ([ .\t-])* m')]);
+                $toDB->execute();
+            } catch (\Throwable $th) {
+                echo("<br>ERROR: {$th}");
+                die(1);
+            }
+
+            $toDB->close();
+            $conn->close();
+        }
+    }
 ?>

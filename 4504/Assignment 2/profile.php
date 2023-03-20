@@ -34,6 +34,10 @@
   <main>
     <section>
       <div id="dom-target-container" class="no-show">
+        <?php
+          processRegister();
+          writeFromRegister();
+        ?>
       </div>
       <h2>Update Profile information</h2>
       <form method="POST" action="index.php">
@@ -192,10 +196,6 @@
           </table>
         </fieldset>
       </form>
-      <?php
-        processRegister();
-        writeFromRegister();
-      ?>
     </section>
   </main>
 </body>
