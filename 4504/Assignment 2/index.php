@@ -5,8 +5,10 @@
     <title>SYSCBOOK - Main</title>
     <link rel="stylesheet" href="assets/css/reset.css" />
     <link rel="stylesheet" href="assets/css/style.css" />
+    <?php include("connection.php"); processProfile(); ?>
   </head>
   <body>
+    <?php processProfile(); ?>
     <header>
       <h1>SYSCBOOK</h1>
       <p>Social media for SYSC students in Carleton University</p>
@@ -30,7 +32,7 @@
 
     <main>
       <section>
-        <form method="POST" action="https://ramisabouni.com/sysc4504/process_index.php">
+        <form method="POST" action="">
           <fieldset>
             <table>
               <tr>
