@@ -25,6 +25,9 @@ function processRegister()
                     VALUES (?,?,?,?,?,?);";
         $conn = connect();
 
+        $empty = NULL;
+        $zero = 0;
+
         $_SESSION['fName'] = $_POST['first_name'];
         $_SESSION['lName'] = $_POST['last_name'];
         $_SESSION['dob'] = $_POST['DOB'];
@@ -46,11 +49,11 @@ function processRegister()
             $toDB->execute();
 
             $toDB = $conn->prepare($avatarQuery);
-            $toDB->bind_param("is", $_SESSION['id'], 'NULL');
+            $toDB->bind_param("ii", $_SESSION['id'], $zero);
             $toDB->execute();
 
             $toDB = $conn->prepare($addrQuery);
-            $toDB->bind_param("iissss", $_SESSION['id'], 0, 'NULL', 'NULL', 'NULL', 'NULL');
+            $toDB->bind_param("iissss", $_SESSION['id'], $zero, $empty, $empty, $empty, $empty);
             $toDB->execute();
         } catch (\Throwable $th) {
             echo ("<br>SQL ERROR: {$th}");
@@ -69,7 +72,6 @@ function writeFromRegister()
 {
     // Write data from prev. page to input elements
     try {
-        $conn = connect();
 
         $fNameInput = "<input class='no-show' value='" . $_SESSION['fName'] . "' id='first_name'>";
         $lNameInput = "<input class='no-show' value='" . $_SESSION['lName'] . "' id='last_name'>";
@@ -133,23 +135,25 @@ function processProfile()
 
 function showPosts()
 {
-    $conn = connect();
-    $postQuery = "SELECT * FROM users_posts WHERE student_id=".$_SESSION['id']." ORDER BY post_id DESC LIMIT 5";
-    $results = $conn->query($postQuery);
-    while ($row = $results->fetch_assoc()) {
-        $postID = $row['post_id'];
-        $postContent = $row['new_post'];
-        $postTimestamp = $row['post_date'];
+    if (isset($_SESSION['id'])) {
+        $conn = connect();
+        $postQuery = "SELECT * FROM users_posts WHERE student_id=".$_SESSION['id']." ORDER BY post_id DESC LIMIT 5";
+        $results = $conn->query($postQuery);
+        while ($row = $results->fetch_assoc()) {
+            $postID = $row['post_id'];
+            $postContent = $row['new_post'];
+            $postTimestamp = $row['post_date'];
 
-        $userID = $row['student_id'];
-        $userInfo = $conn->query("SELECT * FROM users_info WHERE student_id='$userID'")->fetch_assoc();
-        $username = $userInfo['f_name'] . " " . $userInfo['l_name'];
+            $userID = $row['student_id'];
+            $userInfo = $conn->query("SELECT * FROM users_info WHERE student_id='$userID'")->fetch_assoc();
+            $username = $userInfo['f_name'] . " " . $userInfo['l_name'];
 
-        $postStructure = "<details open class='post'> <summary>Post $postID</summary>
-                            <br>
-                            <p>$postContent</p>
-                            <p>Posted By: $username On: $postTimestamp</p></details>";
-        print($postStructure);
+            $postStructure = "<details open class='post'> <summary>Post $postID</summary>
+                                <br>
+                                <p>$postContent</p>
+                                <p>Posted By: $username On: $postTimestamp</p></details>";
+            print($postStructure);
+        }
     }
 }
 
@@ -164,7 +168,9 @@ function processNewPost()
 
         try {
             $toDB = $conn->prepare($postQuery);
-            $toDB->bind_param("iss", ...[$_SESSION['id'], $postContent, date('dd/MM/YY')]);
+            $date = date('Y-m-d h:i:s');
+
+            $toDB->bind_param("iss", ...[$_SESSION['id'], $postContent, $date]);
             $toDB->execute();
         } catch (\Throwable $th) {
             echo ("<br>ERROR: {$th}");
