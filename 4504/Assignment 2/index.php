@@ -2,6 +2,13 @@
 <html lang="en">
 
 <head>
+  <?php
+  session_start();
+
+  if (!isset($_SESSION['start'])) {
+    $_SESSION['start'] = time();
+  }
+  ?>
   <meta charset="utf-8" />
   <title>SYSCBOOK - Main</title>
   <link rel="stylesheet" href="assets/css/reset.css" />
@@ -11,7 +18,6 @@
 
 <body>
   <div class="no-show">
-    <?php processProfile(); ?>
   </div>
   <header>
     <h1>SYSCBOOK</h1>
@@ -64,7 +70,7 @@
       <?php processNewPost(); ?>
 
       <?php showPosts(); ?>
-      <details open class="post">
+      <details class="post">
         <summary>Post 3</summary>
         <br />
         <p>
@@ -81,7 +87,7 @@
         </p>
       </details>
 
-      <details open class="post">
+      <details class="post">
         <summary>Post 2</summary>
         <br />
         <p>
@@ -98,7 +104,7 @@
         </p>
       </details>
 
-      <details open class="post">
+      <details class="post">
         <summary>Post 1</summary>
         <br />
         <p>

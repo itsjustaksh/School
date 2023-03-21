@@ -2,12 +2,19 @@
 <html lang="en">
 
 <head>
+  <?php
+  session_start();
+
+  if (!isset($_SESSION['start'])) {
+    $_SESSION['start'] = time();
+  }
+  ?>
   <meta charset="utf-8" />
   <title>Update SYSCBOOK profile</title>
   <link rel="stylesheet" href="assets/css/reset.css" />
   <link rel="stylesheet" href="assets/css/style.css" />
-  <script src="assets/js/profile.js"></script>
-  <?php include("connection.php"); ?>
+  <script type="text/javascript" src="assets/js/profile.js"></script>
+  <?php include("connection.php"); processProfile(); ?>
 </head>
 
 <body>
@@ -35,8 +42,7 @@
     <section>
       <div id="dom-target-container" class="no-show">
         <?php
-          processRegister();
-          writeFromRegister();
+        writeFromRegister();
         ?>
       </div>
       <h2>Update Profile information</h2>

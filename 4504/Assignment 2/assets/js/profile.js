@@ -1,10 +1,16 @@
+console.log("START SCRIPT");
+
 document.addEventListener('DOMContentLoaded', function () {
     const inputs = document.querySelectorAll(".no-show input");
     let valList = new Object;
+    let id;
+    let val;
+
+    console.log(JSON.stringify(inputs));
 
     inputs.forEach(element => {
-        var id = element.getAttribute("id");
-        var val = element.getAttribute("value");
+        id = element.getAttribute("id");
+        val = element.getAttribute("value");
 
         valList[id] = val;
     });

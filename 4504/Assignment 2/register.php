@@ -2,11 +2,19 @@
 <html lang="en">
 
 <head>
+  <?php
+  session_start();
+
+  if (!isset($_SESSION['start'])) {
+    $_SESSION['start'] = time();
+  }
+  ?>
   <meta charset="utf-8" />
   <title>Register on SYSCBOOK</title>
   <link rel="stylesheet" href="assets/css/reset.css" />
   <link rel="stylesheet" href="assets/css/style.css" />
-  <?php include("connection.php") ?>
+  <?php include("connection.php");
+  processRegister(); ?>
 </head>
 
 <body>
@@ -33,7 +41,7 @@
   <main>
     <section>
       <h2>Register a new profile</h2>
-      <form method="POST" action="profile.php">
+      <form method="POST" action="">
         <fieldset>
           <table>
             <tbody>
@@ -104,7 +112,7 @@
               </tr>
               <tr>
                 <td>
-                  <input type="submit" value="Register" name="submit" />
+                  <input type="submit" value="Register" name="submit" id="submit_btn" />
                   <input type="reset" value="Reset" name="reset" />
                 </td>
               </tr>

@@ -28,8 +28,8 @@ CREATE TABLE users_address (
 );
 CREATE TABLE users_posts (
 	post_id INT(10) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    student_id INT(10),
-    new_post TEXT(1000),
+    student_id INT(10) NOT NULL,
+    new_post TEXT(1000) NOT NULL,
     post_date TIMESTAMP,
     FOREIGN KEY(student_id) REFERENCES users_info(student_id)
 );
