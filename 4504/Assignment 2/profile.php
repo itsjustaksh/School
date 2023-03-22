@@ -46,7 +46,7 @@
         ?>
       </div>
       <h2>Update Profile information</h2>
-      <form method="POST" action="index.php">
+      <form method="POST" action="">
         <fieldset>
           <table>
             <tbody>
@@ -169,23 +169,23 @@
               <tr>
                 <td>
                   <p>
-                    <input name="avatar" type="radio" value="avatar-1" />
+                    <input name="avatar" type="radio" value="1" />
                     <label>
                       <img src="images/img_avatar1.png" alt="avatar-icon" />
                     </label>
-                    <input name="avatar" type="radio" value="avatar-2" />
+                    <input name="avatar" type="radio" value="2" />
                     <label>
                       <img src="images/img_avatar2.png" alt="avatar-icon" />
                     </label>
-                    <input name="avatar" type="radio" value="avatar-3" />
+                    <input name="avatar" type="radio" value="3" />
                     <label>
                       <img src="images/img_avatar3.png" alt="avatar-icon" />
                     </label>
-                    <input name="avatar" type="radio" value="avatar-4" />
+                    <input name="avatar" type="radio" value="4" />
                     <label>
                       <img src="images/img_avatar4.png" alt="avatar-icon" />
                     </label>
-                    <input name="avatar" type="radio" value="avatar-5" />
+                    <input name="avatar" type="radio" value="5" />
                     <label>
                       <img src="images/img_avatar5.png" alt="avatar-icon" />
                     </label>

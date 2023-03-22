@@ -105,7 +105,7 @@ function processProfile()
 
         try {
             $toDB = $conn->prepare($addrQuery);
-            $toDB->bind_param("issss", ...[$street_number, $street_name, $city, $province, $postal_code, $_SESSION['id']]);
+            $toDB->bind_param("issssi", ...[$street_number, $street_name, $city, $province, $postal_code, $_SESSION['id']]);
             $toDB->execute();
 
             $toDB = $conn->prepare($avatarQuery);
@@ -119,8 +119,6 @@ function processProfile()
             $toDB = $conn->prepare($progQuery);
             $toDB->bind_param("si", $_SESSION['prog'], $_SESSION['id']);
             $toDB->execute();
-
-            echo ("Done!");
         } catch (\Throwable $th) {
             echo ("<br>ERROR: {$th}");
             die(1);
@@ -129,7 +127,7 @@ function processProfile()
         $toDB->close();
         $conn->close();
 
-        // header("Location: index.php");
+        header("Location: index.php");
     }
 }
 
