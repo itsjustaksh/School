@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 22, 2023 at 09:12 PM
+-- Generation Time: Mar 22, 2023 at 09:31 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -41,7 +41,7 @@ CREATE TABLE `users_address` (
 --
 
 INSERT INTO `users_address` (`student_id`, `street_num`, `street_name`, `city`, `province`, `postal_code`) VALUES
-(1, 0, NULL, NULL, NULL, NULL);
+(100100, 1234, 'st', 'ci', 'nb', 't2y4u5');
 
 -- --------------------------------------------------------
 
@@ -59,7 +59,7 @@ CREATE TABLE `users_avatar` (
 --
 
 INSERT INTO `users_avatar` (`student_id`, `avatar`) VALUES
-(1, 0);
+(100100, 1);
 
 -- --------------------------------------------------------
 
@@ -80,7 +80,7 @@ CREATE TABLE `users_info` (
 --
 
 INSERT INTO `users_info` (`student_id`, `student_email`, `f_name`, `l_name`, `bday`) VALUES
-(1, 'aksh.ravishankar@gmail.com', 'Aksh', 'Ravishankar', '2023-03-16');
+(100100, 'semail@e.mail', 'My', 'Name', '0000-00-00');
 
 -- --------------------------------------------------------
 
@@ -90,8 +90,8 @@ INSERT INTO `users_info` (`student_id`, `student_email`, `f_name`, `l_name`, `bd
 
 CREATE TABLE `users_posts` (
   `post_id` int(10) NOT NULL,
-  `student_id` int(10) DEFAULT NULL,
-  `new_post` text DEFAULT NULL,
+  `student_id` int(10) NOT NULL,
+  `new_post` text NOT NULL,
   `post_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -100,12 +100,12 @@ CREATE TABLE `users_posts` (
 --
 
 INSERT INTO `users_posts` (`post_id`, `student_id`, `new_post`, `post_date`) VALUES
-(1, 1, 'Post 1', '2023-03-22 13:11:48'),
-(2, 1, 'Post 2', '2023-03-22 13:11:52'),
-(3, 1, 'Post 3', '2023-03-22 13:11:55'),
-(4, 1, 'Post 4', '2023-03-22 13:11:58'),
-(5, 1, 'Post 5', '2023-03-22 13:12:01'),
-(6, 1, 'Post 6', '2023-03-22 13:12:06');
+(1, 100100, 'The Cat in the Hat trotted across the mat. His striped hat gently bobbed up and down as he went. He stepped with a light step, as if he hadn\'t a care in the world. The mat didn\'t make a sound beneath his feet as it was a perfectly flat and smooth surface. ', '2023-03-22 13:29:01'),
+(2, 100100, 'He looked around, a mischievous look in his eyes, before continuing onward. He modestly trotted away, leaving the mat perfectly flat and untouched.', '2023-03-22 13:29:04'),
+(3, 100100, 'Cat in a hat walks over a mat that was flat', '2023-03-22 13:29:09'),
+(4, 100100, 'Post 1', '2023-03-22 13:29:16'),
+(5, 100100, 'Post Malone', '2023-03-22 13:29:29'),
+(6, 100100, 'Next', '2023-03-22 13:29:34');
 
 -- --------------------------------------------------------
 
@@ -123,7 +123,7 @@ CREATE TABLE `users_program` (
 --
 
 INSERT INTO `users_program` (`student_id`, `program`) VALUES
-(1, NULL);
+(100100, 'spec');
 
 --
 -- Indexes for dumped tables
@@ -168,7 +168,7 @@ ALTER TABLE `users_program`
 -- AUTO_INCREMENT for table `users_info`
 --
 ALTER TABLE `users_info`
-  MODIFY `student_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `student_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100101;
 
 --
 -- AUTO_INCREMENT for table `users_posts`
