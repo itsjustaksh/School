@@ -1,4 +1,4 @@
-CREATE DATABASE aksh_ravi_syscbook
+CREATE DATABASE IF NOT EXISTS aksh_ravi_syscbook
 CREATE TABLE users_info (
 	student_id INT(10) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     student_email VARCHAR(150),
