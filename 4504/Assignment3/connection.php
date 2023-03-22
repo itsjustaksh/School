@@ -15,6 +15,13 @@ function connect()
     return $conn;
 }
 
+function isLoggedIn()
+{
+    if (!isset($_SESSION['id'])) {
+        header("Location: login.php");
+    }
+}
+
 function processRegister()
 {
     if (isset($_POST['first_name'])) {
@@ -35,12 +42,18 @@ function processRegister()
         $_SESSION['prog'] = $_POST['Program'];
 
         try {
+            $emailQuery = "SELECT * FROM users_info WHERE student_email='".$_SESSION['email']."'";
+            if ($conn->query($emailQuery)->fetch_assoc()) {
+                // Write to JS to display error, don't submit form
+
+                return;
+            }
+
             $toDB = $conn->prepare($infoQuery);
             $toDB->bind_param("ssss", ...[$_SESSION['email'], $_SESSION['fName'], $_SESSION['lName'], $_SESSION['dob']]);
             $toDB->execute();
 
-            $idQuery = "SELECT student_id FROM users_info WHERE student_email = '" . $_SESSION['email'] . "' AND 
-                            f_name ='" . $_SESSION['fName'] . "' AND l_name ='" . $_SESSION['lName'] . "' AND bday ='" . $_SESSION['dob'] . "'";
+            $idQuery = "SELECT student_id FROM users_info WHERE student_email = '" . $_SESSION['email'] . "'";
 
             $_SESSION['id'] = $conn->query($idQuery)->fetch_assoc()['student_id'];
 
@@ -55,16 +68,23 @@ function processRegister()
             $toDB = $conn->prepare($addrQuery);
             $toDB->bind_param("iissss", $_SESSION['id'], $zero, $empty, $empty, $empty, $empty);
             $toDB->execute();
+
+            $toDB->close();
+            $conn->close();
+
+            header("Location: profile.php");
         } catch (\Throwable $th) {
             echo ("<br>SQL ERROR: {$th}");
+            try {
+                $toDB->close();
+                $conn->close();
+            } catch (\Throwable $th) {
+                die(1);
+            }
             die(1);
         }
 
-        $toDB->close();
-        $conn->close();
-
-
-        header("Location: profile.php");
+        
     }
 }
 
@@ -135,7 +155,7 @@ function showPosts()
 {
     if (isset($_SESSION['id'])) {
         $conn = connect();
-        $postQuery = "SELECT * FROM users_posts WHERE student_id=".$_SESSION['id']." ORDER BY post_id DESC LIMIT 5";
+        $postQuery = "SELECT * FROM users_posts ORDER BY post_id DESC LIMIT 10";
         $results = $conn->query($postQuery);
         while ($row = $results->fetch_assoc()) {
             $postID = $row['post_id'];

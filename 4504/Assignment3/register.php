@@ -76,7 +76,6 @@
           </table>
         </fieldset>
         <fieldset>
-          <!-- <legend><p>Profile information</p></legend> -->
           <table>
             <tbody>
               <tr>
@@ -92,6 +91,14 @@
                     <p>Email address:</p>
                   </label>
                   <input type="email" name="student_email" />
+                  <label for="password-n">
+                    <p> New Password</p>
+                  </label>
+                  <input type="password" name="password-n" id="password-n">
+                  <label for="password-c">
+                    <p>Confirm Password</p>
+                  </label>
+                  <input type="password" name="password-c" id="password-c">
                 </td>
               </tr>
               <tr>
