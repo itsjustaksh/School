@@ -1,5 +1,0 @@
-{
-    "python.analysis.typeCheckingMode": "off",
-    "terminal.integrated.defaultProfile.windows": "Windows PowerShell",
-    "php.validate.executablePath": "C:\\Users\\googl\\xampp\\php\\php.exe",
-}
