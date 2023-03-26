@@ -17,8 +17,6 @@
 </head>
 
 <body>
-  <div class="no-show">
-  </div>
   <header>
     <h1>SYSCBOOK</h1>
     <p>Social media for SYSC students in Carleton University</p>
