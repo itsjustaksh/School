@@ -153,7 +153,7 @@ class Client:
 			self.rtspSeq += 1
 			
 			# Write the RTSP request to be sent.
-			request = f"SETUP {self.fileName} CSeq: {self.rtspSeq} RTSP/1.0 Transport: RTP/UDP;client_port={25000}"
+			request = f"SETUP {self.fileName}\nCSeq: {self.rtspSeq} RTSP/1.0\nTransport: RTP/UDP;client_port={25000}"
 			self.rtspSocket.sendto(request.encode(), (self.serverAddr, self.serverPort))
 			
 			# Keep track of the sent request.
@@ -165,7 +165,7 @@ class Client:
 			self.rtspSeq += 1
 			
 			# Write the RTSP request to be sent.
-			request = f"PLAY {self.fileName} RTSP/1.0 CSeq: {self.rtspSeq} Session: {self.sessionId}"
+			request = f"PLAY {self.fileName} RTSP/1.0\nCSeq: {self.rtspSeq}\nSession: {self.sessionId}"
 			self.rtspSocket.sendto(request.encode(), (self.serverAddr, self.serverPort))
 			
 			# Keep track of the sent request.
@@ -177,7 +177,7 @@ class Client:
 			self.rtspSeq +=1
 			
 			# Write the RTSP request to be sent.
-			request = f"PAUSE {self.fileName} RTSP/1.0 CSeq: {self.rtspSeq} Session: {self.sessionId}"
+			request = f"PAUSE {self.fileName} RTSP/1.0\nCSeq: {self.rtspSeq}\nSession: {self.sessionId}"
 			self.rtspSocket.sendto(request.encode(), (self.serverAddr, self.serverPort))
 			
 			# Keep track of the sent request.
@@ -189,7 +189,7 @@ class Client:
 			self.rtspSeq +=1
 			
 			# Write the RTSP request to be sent.
-			request = f"TEARDOWN {self.fileName} RTSP/1.0 CSeq: {self.rtspSeq} Session: {self.sessionId}"
+			request = f"TEARDOWN {self.fileName} RTSP/1.0\nCSeq: {self.rtspSeq}\nSession: {self.sessionId}"
 			self.rtspSocket.sendto(request.encode(), (self.serverAddr, self.serverPort))
 			
 			# Keep track of the sent request.
@@ -259,7 +259,7 @@ class Client:
 		# TO COMPLETE
 		#-------------
 		# Create a new datagram socket to receive RTP packets from the server
-		self.rtpSocket = socket(socket.AF_INET, socket.SOCK_DGRAM)
+		self.rtpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		
 		# Set the timeout value of the socket to 0.5sec
 		self.rtpSocket.setTimeout(0.5)
