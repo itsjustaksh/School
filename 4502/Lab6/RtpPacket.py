@@ -27,19 +27,27 @@ class RtpPacket:
 		header[0] = header[0] | cc        << (0)
 
 		# Byte 2
-		header[1] = header[1] | pt        << (7)
-		header[1] = header[1] | marker    << (0)
+		header[1] = header[1] | marker    << (7)
+		header[1] = header[1] | pt        << (0)
 
 		# Byte 3/4
-		header[2:3] = header[2:3] | seqnum
+		header[2] = (seqnum >> 8) & 0xFF
+		header[3] = seqnum & 0xFF
 
 		# Byte 5 to 8 
-		header[4:8] = header[4:8] | timestamp
+		header[4] = (timestamp >> 24) & 0xFF
+		header[5] = (timestamp >> 16) & 0xFF
+		header[6] = (timestamp >> 8)  & 0xFF
+		header[7] =  timestamp & 0xFF
 
 		# Byte 9 to 12
-		header[8:12] = header[8:12] | ssrc
+		header[8]  = (ssrc >> 24) & 0xFF
+		header[9]  = (ssrc >> 16) & 0xFF
+		header[10] = (ssrc >> 8)  & 0xFF
+		header[11] =  ssrc & 0xFF
 
 		# Get the payload from the argument
+		self.header = header
 		self.payload = payload
 		
 	def decode(self, byteStream):
@@ -54,6 +62,7 @@ class RtpPacket:
 	def seqNum(self):
 		"""Return sequence (frame) number."""
 		seqNum = self.header[2] << 8 | self.header[3]
+		print(self.header[2], self.header[3])
 		return int(seqNum)
 	
 	def timestamp(self):

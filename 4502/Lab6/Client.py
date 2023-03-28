@@ -153,7 +153,7 @@ class Client:
 			self.rtspSeq += 1
 			
 			# Write the RTSP request to be sent.
-			request = f"SETUP {self.fileName}\nCSeq: {self.rtspSeq} RTSP/1.0\nTransport: RTP/UDP;client_port={25000}"
+			request = f"SETUP {self.fileName} RTSP/1.0\nCSeq: {self.rtspSeq} RTSP/1.0\nTransport: RTP/UDP; client_port= {self.rtpPort}"
 			self.rtspSocket.sendto(request.encode(), (self.serverAddr, self.serverPort))
 			
 			# Keep track of the sent request.
@@ -243,7 +243,7 @@ class Client:
 					elif self.requestSent == self.PLAY:
 						self.state = self.PLAYING
 					elif self.requestSent == self.PAUSE:
-						self.state = self.PLAYING
+						self.state = self.READY
 						
 						# The play thread exits. A new thread is created on resume.
 						self.playEvent.set()
@@ -262,7 +262,7 @@ class Client:
 		self.rtpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		
 		# Set the timeout value of the socket to 0.5sec
-		self.rtpSocket.setTimeout(0.5)
+		self.rtpSocket.settimeout(0.5)
 		
 		try:
 			# Bind the socket to the address using the RTP port given by the client user
