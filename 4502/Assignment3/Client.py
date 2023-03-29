@@ -5,6 +5,7 @@
 # Client.py
 
 # Imports
+import os, shutil
 from socket import *
 import sys
 import time
@@ -15,26 +16,68 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
     # set up socket using dest addr
     address = (destAddr, destPort)
 
-    # Send message
-    clientSocket.sendto(message.encode(), address)
-
-    # wait for message response
-    # once available, gather info needed and print as shown in lab doc
-    try:
-        retMessage = clientSocket.recv(2048)
-        print(retMessage.decode(),'\n\n')
-    except TimeoutError as e:
-        print(e)
-        print("Request Timed Out")
-
-    while 1:
+    # Check cache for info if looking for dates or cars lists
+    if 'cars' in message:
         try:
-            clientSocket.recv(2048)
-        except TimeoutError:
-            return
+            # if found in cache, print from cache
+            with open('.cache\\cars.txt', 'r') as cars: 
+                print("From cache:\n\n")
+                for line in cars:
+                    print(line)
+                cars.close()
+        except FileNotFoundError or FileExistsError:
+            print("File not found in cache, reaching server")
+            clientSocket.sendto(message.encode(), address)
+            try:
+                retMessage = clientSocket.recv(2048)
+                print(retMessage.decode(),'\n\n')
+
+                saveCars = open('.cache\\cars.txt', 'w')
+                saveCars.write(retMessage.decode())
+                saveCars.close()
+            except TimeoutError as e:
+                print("Request Timed Out")
+
+    elif 'dates' in message:
+        try:
+            with open('.cache\\dates.txt', 'r') as dates: 
+                print('From cache:\n\n')
+                for line in dates:
+                    print(line)
+                dates.close()
+        except FileNotFoundError or FileExistsError:
+            print("File not found in cache, reaching server")
+            clientSocket.sendto(message.encode(), address)
+            try:
+                retMessage = clientSocket.recv(2048)
+                print(retMessage.decode(),'\n\n')
+
+                saveDates = open('.cache\\cars.txt', 'w')
+                saveDates.write(retMessage.decode())
+                saveDates.close()
+            except TimeoutError as e:
+                print("Request Timed Out")
+    else:
+        clientSocket.sendto(message.encode(), address)
+
+        # wait for message response
+        # once available, gather info needed and print as shown in lab doc
+        try:
+            retMessage = clientSocket.recv(2048)
+            print(retMessage.decode(),'\n\n')
+        except TimeoutError as e:
+            print(e)
+            print("Request Timed Out")
+
+        while 1:
+            try:
+                clientSocket.recv(2048)
+            except TimeoutError:
+                break
 
 
 def start_client_UI(destAddr, destPort, test):
+    os.makedirs('.cache')
     # Sequence of messages to test with
     messages = ['cars', 'dates', 'check BMWX1', 'reserve BMWX1 Wednesday-2023-02-08', 'check BMWX1',
                 'delete BMWX1 Wednesday-2023-02-08', 'check BMWX1', 'reserve BMWX1 Sunday-2023-02-19', 
@@ -62,7 +105,7 @@ def start_client_UI(destAddr, destPort, test):
             client_packet_send(destAddr, destPort, commandToSend, clientSocket)
             if 'quit' in commandToSend.lower():
                 clientSocket.close()
-                return
+                break
             
             time.sleep(0.5)
 
@@ -78,7 +121,16 @@ if __name__ == "__main__":
         print('Missing arguments. Usage: \'python Client.py <Dest Addr> <Port Num>\'')
         exit(1)
 
-    test = 0
-    start_client_UI(destAddr, destPort, test)
-    exit(0)
-    
+    test = False
+    try:
+        test = sys.argv[3]
+    except IndexError:
+        test = False
+    try:
+        start_client_UI(destAddr, destPort, test)
+    except KeyboardInterrupt:
+        try:
+            shutil.rmtree('.cache', False)
+            exit(0)
+        except Exception as e:
+            exit(1)
