@@ -7,26 +7,31 @@ from random import randint
 from socket import *
 import struct
 from threading import Lock, Thread, Event, get_native_id
-import sys
-from time import sleep
+import sys, os
+from time import sleep, time
 
 event = Event()
 dataLock = Lock()
 
 class Server:
 
-    def __init__(self, portNum=62002, mulIP='224.0.0.10') -> None:
+    def __init__(self, portNum=62002, mulIP='224.0.0.10', pid=os.getpid(), delay=False) -> None:
         '''
         Initiate class and populate data structures from text files (database)
         '''
-        
+
+        self.maxLonelyTime = 30
         self.port = portNum
         self.mulGroup = mulIP
         self.serverSocket = socket(AF_INET, SOCK_DGRAM)
         self.encoding = 'utf-8'
         self.threads = []
         self.resListFilepath = 'reservations.txt'
-        self.delayOn = True
+        self.delayOn = delay
+        self.isLeader = False
+        self.ID = pid
+        self.lonelyUptime = time()
+
 
         # Assign IP address and port number to socket
         # using loopback address
@@ -48,7 +53,7 @@ class Server:
         '''
         Open a socket to recieve connections and wait for requests. As they come in, 
         accept and create thread to deal with them. Also use multicast to communicate 
-        with other servers for file updates
+        with other servers for file updates, heartbeat messages, and elections. 
         '''
 
         print('Database loaded')
@@ -59,30 +64,67 @@ class Server:
                 # Wait for conn and accept
                 message, (ip, portIn) = listenSocket.recvfrom(1024)
 
+                message = message.decode()
 
-                if  'Update File' in message.decode():
-                    self.saveData(dataList)
-                    listenSocket.sendto(f'{get_native_id()}: DB updated'.encode(), (self.mulGroup, self.port))
-                elif 'DB updated' in message.decode():
+                if 'DB updated' in message or 'Reply' in message:
                     continue
-
+                elif 'Update File' in message:
+                    self.saveData(dataList)
+                    listenSocket.sendto(f'{self.ID}: DB updated'.encode(), (self.mulGroup, self.port))
+                elif 'Heartbeat' in message and self.isLeader:
+                    listenSocket.sendto(f'{self.ID}: alive'.encode(), (self.mulGroup, self.port))
+                elif 'Election' in message and self.ID not in message:
+                    listenSocket.sendto(f'{self.ID}: Vote'.encode(), (self.mulGroup, self.port))
+                elif 'R:' in message:
+                    self.newRequest(self, message, ip, portIn, dataList, listenSocket)
                 else:
-                    print(f'Request {message} from {ip} on port {portIn}, starting new thread')
-
-                    # Create thread to deal with request 
-                    newThread = Thread(target=self.waitForRequests, args=(dataList, message.decode(), ip, portIn, listenSocket))
-                    newThread.start()
-                    self.threads.append(newThread)
-
+                    print(f'Ignored invalid request: {message}\n')
             except TimeoutError:
                 try:
-                    continue
+                    pass
                 except KeyboardInterrupt:
                     event.set()
                     break
 
+    def heartbeat(self, listenSocket: socket, dataList: list):
+        if not self.isLeader and self.maxLonelyTime < (time() - self.lonelyUptime):
+                try:
+                    listenSocket.sendto('Heartbeat'.encode(), (self.mulGroup, self.port))
+
+                    reply, (ip, portIn) = listenSocket.recvfrom(1024)
+                    reply = reply.decode()
+
+                    if 'R:' in reply:
+                        self.newRequest(self, reply, ip, portIn, dataList, listenSocket)
+                    elif 'alive' in reply:
+                        return
+                    else:
+                        while 'alive' not in reply and self.ID in reply:
+                            reply, (ip, portIn) = listenSocket.recvfrom(1024)
+                            reply = reply.decode()
+
+                            if 'R' in reply:
+                                self.newRequest(self, reply, ip, portIn, dataList, listenSocket)
+                except TimeoutError:
+                    print(f'Leader dead, {self.ID} starting new election')
+
+                    # TODO: Implement Election
+
+    
+
+
+    def newRequest(self, message, ip, portIn, dataList, listenSocket):
+        # When new request comes in, call handler with appropriate args
+        print(f'Request {message} from {ip} on port {portIn}, starting new thread')
+
+        # Create thread to deal with request 
+        newThread = Thread(target=self.waitForRequests, args=(dataList, message.decode(), ip, portIn, listenSocket))
+        newThread.start()
+        self.threads.append(newThread)
+
         for t in self.threads:
             t.join()
+
 
     def waitForRequests(self, dataList, message, dest, port, connSocket) -> None:
         '''
@@ -125,11 +167,14 @@ class Server:
                 returnMessage = self.deleteRes(car, date, dataList)
 
             case 'quit':
-                connSocket.sendto('Connection terminated.'.encode(), (dest,port))
+                if self.isLeader:
+                    connSocket.sendto('Connection terminated.'.encode(), (dest,port))
+
+                    print(f"Closing connection with {dest} on {port}, thread ending")
+                
+                # Save data, even if not responding to request
                 self.saveData(dataList)
-
-                print(f"Closing connection with {dest} on {port}, thread ending")
-
+                
                 # Exit thread
                 return 
 
@@ -140,8 +185,9 @@ class Server:
         if self.delayOn:
             delay = randint(a=5, b=10)
             sleep(delay)
-        print(f'Sending response and closing thread\n')
-        connSocket.sendto(returnMessage.encode(), (dest,port))
+        if self.isLeader:
+            print(f'Sending response and closing thread\n')
+            connSocket.sendto(returnMessage.encode(), (dest,port))
         
         return
 
@@ -153,7 +199,7 @@ class Server:
         message = ''
         with dataLock:
             for c in dataList[0]:
-                message += f'{c} '
+                message += f'{c}\n'
         return message
 
     def composeDateMessage(self, dataList):
@@ -164,7 +210,7 @@ class Server:
         message = ''
         with dataLock:
             for d in dataList[1]:
-                message += f'{d} '
+                message += f'{d}\n'
         return message
 
     def composeResMessage(self, car: str, dataList):
@@ -246,19 +292,19 @@ class Server:
         # files with updated info
 
         print("Checking for active servers before reading file")
-        pid = get_native_id()
         multicast_addr = (self.mulGroup, self.port)
         self.serverSocket.setsockopt(IPPROTO_IP, IP_MULTICAST_TTL, struct.pack('b', 1))
-        self.serverSocket.sendto(f'{pid}: Update File'.encode(), multicast_addr)
+        self.serverSocket.sendto(f'{self.ID}: Update File'.encode(), multicast_addr)
 
         # Wait for multicast responses, if valid or timeout, start. 
-        message = self.serverSocket.recv(1024)
+        message = self.serverSocket.recv(1024).decode()
         try:
-            while(str(pid) in message.decode()):
-                message = self.serverSocket.recv(1024)
-            if "DB updated" not in message.decode():
+            while(str(self.ID) in message or 'Heartbeat' in message or 'Reply' in message or 'Election' in message):
+                message = self.serverSocket.recv(1024).decode()
+            if "DB updated" not in message:
                 raise(ValueError)
             print("Recieved file update notification")
+
         except ValueError:
             print(f"Bad reply from multicast server, cannot start system\nReceived: {message}")
             self.serverSocket.close()
@@ -301,7 +347,7 @@ class Server:
                         dataStruct[1].append(date.strip())
         except IOError as e:
             print(e)
-            exit(2)
+            exit(1)
         except Exception as e:
             print(e)
             exit(1)
@@ -323,19 +369,28 @@ if __name__ == "__main__":
         print("Missing required positional arguments")
         print("Usage: python Server.py <multicast IP> <port number>")
         exit(1)
+
     
+    # Find value for pid if it's passed in, if not assign one
+    try:
+        id = sys.argv[3]
+    except IndexError:
+        id = os.getpid()
+
     # Start server
-    server = Server(portNum=port_num, mulIP=mulCastIP)
+    server = Server(portNum=port_num, mulIP=mulCastIP, pid=id)
     try:
         data = server.start()
         if data:
             server.connect(data)
     except KeyboardInterrupt:
         server.saveData(data)
+        print('Goodbye!')
     except Exception as e:
         print(e)
         print('Ran into fatal error, saving db before shutting down')
         
+    # Attempt to save changes
     try:
         if data:
             server.saveData(data)

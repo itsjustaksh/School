@@ -10,8 +10,10 @@ from socket import *
 import sys
 import time
 
+MAX_CACHE_TIME = 60
 
-def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket: socket) -> None:
+
+def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket: socket, cacheTime: int) -> None:
 
     # set up socket using dest addr
     address = (destAddr, destPort)
@@ -19,6 +21,9 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
     # Check cache for info if looking for dates or cars lists
     if 'cars' in message:
         try:
+            # Check if cache is still valid
+            if cacheTime > MAX_CACHE_TIME:
+                raise(FileNotFoundError)
             # if found in cache, print from cache
             with open('.cache\\cars.txt', 'r') as cars: 
                 print("From cache:\n\n")
@@ -26,7 +31,7 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
                     print(line)
                 cars.close()
         except FileNotFoundError or FileExistsError:
-            print("File not found in cache, reaching server")
+            print("File not found in cache or cache stale, reaching server")
             clientSocket.sendto(message.encode(), address)
             try:
                 retMessage = clientSocket.recv(2048)
@@ -93,7 +98,7 @@ def start_client_UI(destAddr, destPort, test):
     # Send each message in sequence and print response, wait half a second between responses
         for message in messages:
             print(f'Request: {message}\nResponse:')
-            client_packet_send(destAddr, destPort, message, clientSocket)
+            client_packet_send(destAddr, destPort, f'R: {message}', clientSocket)
             time.sleep(0.5)
 
         clientSocket.close()
@@ -102,7 +107,7 @@ def start_client_UI(destAddr, destPort, test):
         while (1):
             commandToSend = input("Insert command to send: ")
 
-            client_packet_send(destAddr, destPort, commandToSend, clientSocket)
+            client_packet_send(destAddr, destPort, f'R: {commandToSend}', clientSocket)
             if 'quit' in commandToSend.lower():
                 clientSocket.close()
                 break
