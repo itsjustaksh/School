@@ -62,12 +62,18 @@ class Server:
         while True:
             try:
                 # Wait for conn and accept
+                if self.savedReq:
+                    self.newRequest(self, self.savedReq[0], self.savedReq[1], self.savedReq[2], dataList, listenSocket)
+                    self.savedReq = None
+                
                 message, (ip, portIn) = listenSocket.recvfrom(1024)
 
                 message = message.decode()
 
-                if 'DB updated' in message or 'Reply' in message:
+                if 'DB updated' in message:
                     continue
+                elif 'R:' in message:
+                    self.newRequest(self, message, ip, portIn, dataList, listenSocket)
                 elif 'Update File' in message:
                     self.saveData(dataList)
                     listenSocket.sendto(f'{self.ID}: DB updated'.encode(), (self.mulGroup, self.port))
@@ -75,8 +81,9 @@ class Server:
                     listenSocket.sendto(f'{self.ID}: alive'.encode(), (self.mulGroup, self.port))
                 elif 'Election' in message and self.ID not in message:
                     listenSocket.sendto(f'{self.ID}: Vote'.encode(), (self.mulGroup, self.port))
-                elif 'R:' in message:
-                    self.newRequest(self, message, ip, portIn, dataList, listenSocket)
+                elif 'Leader' in message:
+                    if self.ID == message.strip.split(': ')[0]:
+                        self.isLeader = True
                 else:
                     print(f'Ignored invalid request: {message}\n')
             except TimeoutError:
@@ -99,7 +106,7 @@ class Server:
                     elif 'alive' in reply:
                         return
                     else:
-                        while 'alive' not in reply and self.ID in reply:
+                        while 'alive' not in reply or self.ID in reply:
                             reply, (ip, portIn) = listenSocket.recvfrom(1024)
                             reply = reply.decode()
 
@@ -110,7 +117,36 @@ class Server:
 
                     # TODO: Implement Election
 
-    
+    def election(self, listenSocket):
+        
+        try:
+            ids = [self.ID]
+            listenSocket.sendto(f'{self.ID}: Election', (self.mulGroup, self.port))
+
+            reply, (ip, portIn) = listenSocket.recvfrom(1024)
+
+            if 'Vote' in reply:
+                ids += [int(reply.strip().split(':')[0])]
+
+                while 'Vote' in reply:
+                    reply = listenSocket.recvfrom(1024)
+                    ids += [int(reply.strip().split(':')[0])]
+            elif 'R: ' in reply:
+                self.savedReq = (reply, ip, portIn)
+        except TimeoutError:
+            maxID = max(ids)
+
+            if maxID == self.ID:
+                self.isLeader = True
+            
+            listenSocket.sendto(f'{maxID}: Leader')
+            return
+
+        maxID = max(ids)
+
+        if maxID == self.ID:
+            self.isLeader = True
+        return      
 
 
     def newRequest(self, message, ip, portIn, dataList, listenSocket):
