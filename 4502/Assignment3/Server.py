@@ -20,7 +20,7 @@ class Server:
         Initiate class and populate data structures from text files (database)
         '''
 
-        self.maxLonelyTime = 30
+        self.maxLonelyTime = 20
         self.port = portNum
         self.mulGroup = mulIP
         self.serverSocket = socket(AF_INET, SOCK_DGRAM)
@@ -62,27 +62,31 @@ class Server:
         while True:
             try:
                 # Wait for conn and accept
-                if self.savedReq:
+                try:
                     self.newRequest(self, self.savedReq[0], self.savedReq[1], self.savedReq[2], dataList, listenSocket)
                     self.savedReq = None
-                
+                except:
+                    pass
+
                 message, (ip, portIn) = listenSocket.recvfrom(1024)
 
                 message = message.decode()
 
-                if 'DB updated' in message:
+                if 'DB updated' in message or 'alive' in message or 'Vote' in message:
                     continue
                 elif 'R:' in message:
                     self.newRequest(self, message, ip, portIn, dataList, listenSocket)
                 elif 'Update File' in message:
                     self.saveData(dataList)
                     listenSocket.sendto(f'{self.ID}: DB updated'.encode(), (self.mulGroup, self.port))
-                elif 'Heartbeat' in message and self.isLeader:
-                    listenSocket.sendto(f'{self.ID}: alive'.encode(), (self.mulGroup, self.port))
-                elif 'Election' in message and self.ID not in message:
+                elif 'Heartbeat' in message:
+                    if self.isLeader:
+                        listenSocket.sendto(f'{self.ID}: alive'.encode(), (self.mulGroup, self.port))
+                elif 'Election' in message and str(self.ID) not in message:
+                    print(f'Recieved Election: {message}')
                     listenSocket.sendto(f'{self.ID}: Vote'.encode(), (self.mulGroup, self.port))
                 elif 'Leader' in message:
-                    if self.ID == message.strip.split(': ')[0]:
+                    if self.ID == message.strip().split(': ')[0]:
                         self.isLeader = True
                 else:
                     print(f'Ignored invalid request: {message}\n')
@@ -92,59 +96,68 @@ class Server:
                 except KeyboardInterrupt:
                     event.set()
                     break
+            
+            if not self.isLeader and self.maxLonelyTime < (time() - self.lonelyUptime):
+                self.heartbeat(listenSocket, dataList)
 
     def heartbeat(self, listenSocket: socket, dataList: list):
-        if not self.isLeader and self.maxLonelyTime < (time() - self.lonelyUptime):
-                try:
-                    listenSocket.sendto('Heartbeat'.encode(), (self.mulGroup, self.port))
+        try:
+            listenSocket.sendto('Heartbeat'.encode(), (self.mulGroup, self.port))
 
+            reply, (ip, portIn) = listenSocket.recvfrom(1024)
+            reply = reply.decode()
+
+            if 'R:' in reply:
+                self.newRequest(self, reply, ip, portIn, dataList, listenSocket)
+            elif 'alive' in reply:
+                return
+            else:
+                while 'alive' not in reply or str(self.ID) in reply:
                     reply, (ip, portIn) = listenSocket.recvfrom(1024)
                     reply = reply.decode()
 
-                    if 'R:' in reply:
+                    if 'R: ' in reply:
                         self.newRequest(self, reply, ip, portIn, dataList, listenSocket)
-                    elif 'alive' in reply:
-                        return
-                    else:
-                        while 'alive' not in reply or self.ID in reply:
-                            reply, (ip, portIn) = listenSocket.recvfrom(1024)
-                            reply = reply.decode()
+        except TimeoutError:
+            print(f'Leader dead, {self.ID} starting new election')
+            
+            self.election(listenSocket)
 
-                            if 'R' in reply:
-                                self.newRequest(self, reply, ip, portIn, dataList, listenSocket)
-                except TimeoutError:
-                    print(f'Leader dead, {self.ID} starting new election')
-
-                    # TODO: Implement Election
-
-    def election(self, listenSocket):
+    def election(self, listenSocket, start=True, ids=[]):
         
         try:
-            ids = [self.ID]
-            listenSocket.sendto(f'{self.ID}: Election', (self.mulGroup, self.port))
+            if start:
+                ids = [self.ID]
+                listenSocket.sendto(f'{self.ID}: Election'.encode(), (self.mulGroup, self.port))
 
             reply, (ip, portIn) = listenSocket.recvfrom(1024)
 
-            if 'Vote' in reply:
+            if 'Election' in reply.decode():
+                self.election(listenSocket, False, ids)
+
+            if 'Vote' in reply.decode():
                 ids += [int(reply.strip().split(':')[0])]
+                return
 
-                while 'Vote' in reply:
-                    reply = listenSocket.recvfrom(1024)
-                    ids += [int(reply.strip().split(':')[0])]
-            elif 'R: ' in reply:
+            if 'R: ' in reply.decode():
                 self.savedReq = (reply, ip, portIn)
+                self.election(listenSocket, False, ids)
         except TimeoutError:
-            maxID = max(ids)
+            # maxID = max(ids)
 
-            if maxID == self.ID:
-                self.isLeader = True
-            
-            listenSocket.sendto(f'{maxID}: Leader')
+            # print(f'New leader: {maxID}')
+            # if maxID == self.ID:
+            #     self.isLeader = True
+            # listenSocket.sendto(f'{maxID}: Leader'.encode(), (self.mulGroup, self.port))
             return
+        except Exception as e:
+            print(e)
 
         maxID = max(ids)
+        listenSocket.sendto(f'{maxID}: Leader'.encode(), (self.mulGroup, self.port))
 
-        if maxID == self.ID:
+        if maxID == self.ID and start:
+            print(f'New leader: {maxID}')
             self.isLeader = True
         return      
 
@@ -335,12 +348,9 @@ class Server:
         # Wait for multicast responses, if valid or timeout, start. 
         message = self.serverSocket.recv(1024).decode()
         try:
-            while(str(self.ID) in message or 'Heartbeat' in message or 'Reply' in message or 'Election' in message):
+            while(str(self.ID) in message or "DB updated" not in message):
                 message = self.serverSocket.recv(1024).decode()
-            if "DB updated" not in message:
-                raise(ValueError)
             print("Recieved file update notification")
-
         except ValueError:
             print(f"Bad reply from multicast server, cannot start system\nReceived: {message}")
             self.serverSocket.close()
@@ -387,6 +397,14 @@ class Server:
         except Exception as e:
             print(e)
             exit(1)
+
+        # Find Leader
+        try:
+            self.heartbeat(self.serverSocket, dataStruct)
+        except Exception as e:
+            print(e)
+            print('Heartbeat error, assuming I\'m leader')
+            self.isLeader = True
 
         return dataStruct
             

@@ -20,7 +20,7 @@
         "235.1.1.1",
         "62002"
       ],
-      "cwd": "${workspaceFolder}\\4502\\Assignment2",
+      "cwd": "${workspaceFolder}\\4502\\Assignment3",
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -33,7 +33,7 @@
         "235.1.1.1",
         "62002"
       ],
-      "cwd": "${workspaceFolder}\\4502\\Assignment2",
+      "cwd": "${workspaceFolder}\\4502\\Assignment3",
       "console": "integratedTerminal",
       "justMyCode": true
     },
