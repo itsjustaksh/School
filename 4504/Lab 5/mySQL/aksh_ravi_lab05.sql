@@ -1,5 +1,7 @@
 -- Create db
-CREATE DATABASE IF NOT EXISTS aksh_ravi_lab05 -- Q1: Create student info table with corresponding columns and datatypes
+CREATE DATABASE IF NOT EXISTS aksh_ravi_lab05 
+USE aksh_ravi_lab05
+-- Q1: Create student info table with corresponding columns and datatypes
 CREATE TABLE STUDENT_INFO (
     ID INT NOT NULL PRIMARY KEY,
     NAME VARCHAR(100),
