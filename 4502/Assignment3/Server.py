@@ -4,11 +4,13 @@
 
 # Imports
 from random import randint
+import random
 from socket import *
 import struct
 from threading import Lock, Thread, Event, get_native_id
 import sys, os
 from time import sleep, time
+import traceback
 
 event = Event()
 dataLock = Lock()
@@ -31,6 +33,7 @@ class Server:
         self.isLeader = False
         self.ID = pid
         self.lonelyUptime = time()
+        self.savedReqs = []
 
 
         # Assign IP address and port number to socket
@@ -40,7 +43,7 @@ class Server:
             group = inet_aton(self.mulGroup)
             bytePack = struct.pack('4sL', group, INADDR_ANY)
             self.serverSocket.setsockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, bytePack)
-            self.serverSocket.settimeout(5)
+            self.serverSocket.settimeout(1)
             self.serverSocket.bind(('', self.port))
 
             print(f'Starting Server... \nWait until "Database loaded" is printed to start other Servers/Clients')
@@ -63,19 +66,20 @@ class Server:
             try:
                 # Wait for conn and accept
                 try:
-                    self.newRequest(self, self.savedReq[0], self.savedReq[1], self.savedReq[2], dataList, listenSocket)
-                    self.savedReq = None
+                    while len(self.savedReqs) != 0:
+                        req = self.savedReqs.pop(0)
+                        self.newRequest(req[0], req[1], req[2], dataList, listenSocket)
                 except:
                     pass
-
+                
                 message, (ip, portIn) = listenSocket.recvfrom(1024)
 
                 message = message.decode()
 
-                if 'DB updated' in message or 'alive' in message or 'Vote' in message:
+                if 'DB updated' in message or 'alive' in message or 'Vote' in message or str(self.ID) in message:
                     continue
                 elif 'R:' in message:
-                    self.newRequest(self, message, ip, portIn, dataList, listenSocket)
+                    self.newRequest(message, ip, portIn, dataList, listenSocket)
                 elif 'Update File' in message:
                     self.saveData(dataList)
                     listenSocket.sendto(f'{self.ID}: DB updated'.encode(), (self.mulGroup, self.port))
@@ -84,10 +88,16 @@ class Server:
                         listenSocket.sendto(f'{self.ID}: alive'.encode(), (self.mulGroup, self.port))
                 elif 'Election' in message and str(self.ID) not in message:
                     print(f'Recieved Election: {message}')
+                    with dataLock:
+                        dataList[3] = int(message.strip().split(': ')[0])
                     listenSocket.sendto(f'{self.ID}: Vote'.encode(), (self.mulGroup, self.port))
                 elif 'Leader' in message:
-                    if self.ID == message.strip().split(': ')[0]:
-                        self.isLeader = True
+                    leaderID = int(message.strip().split(': ')[0])
+                    print(f'New Leader: {leaderID}')
+                    with dataLock:
+                        dataList[3] = 0
+
+                    self.isLeader = True if self.ID == leaderID else False
                 else:
                     print(f'Ignored invalid request: {message}\n')
             except TimeoutError:
@@ -97,8 +107,13 @@ class Server:
                     event.set()
                     break
             
-            if not self.isLeader and self.maxLonelyTime < (time() - self.lonelyUptime):
-                self.heartbeat(listenSocket, dataList)
+            
+            if self.maxLonelyTime < (time() - self.lonelyUptime):
+                self.lonelyUptime = time()
+                print(f'Leader Status: {self.isLeader}, Server ID: {self.ID}')
+                
+                if not self.isLeader:
+                    self.heartbeat(listenSocket, dataList)
 
     def heartbeat(self, listenSocket: socket, dataList: list):
         try:
@@ -108,7 +123,7 @@ class Server:
             reply = reply.decode()
 
             if 'R:' in reply:
-                self.newRequest(self, reply, ip, portIn, dataList, listenSocket)
+                self.newRequest(reply, ip, portIn, dataList, listenSocket)
             elif 'alive' in reply:
                 return
             else:
@@ -117,49 +132,43 @@ class Server:
                     reply = reply.decode()
 
                     if 'R: ' in reply:
-                        self.newRequest(self, reply, ip, portIn, dataList, listenSocket)
+                        self.savedReqs += [(reply, ip, portIn)]
         except TimeoutError:
-            print(f'Leader dead, {self.ID} starting new election')
+            sleep(random.random())
+            with dataLock:
+                if not dataList[3]:
+                    print(f'Leader dead, {self.ID} starting new election')
+                    dataList[3] = self.ID
             
-            self.election(listenSocket)
+                self.election(listenSocket, dataList)
 
-    def election(self, listenSocket, start=True, ids=[]):
-        
-        try:
-            if start:
-                ids = [self.ID]
-                listenSocket.sendto(f'{self.ID}: Election'.encode(), (self.mulGroup, self.port))
+    def election(self, listenSocket, dataList, start=True, ids=[]):
+        if dataList[3] == self.ID:
+            try:
+                if start:
+                    ids = [self.ID]
+                    listenSocket.sendto(f'{self.ID}: Election'.encode(), (self.mulGroup, self.port))
 
-            reply, (ip, portIn) = listenSocket.recvfrom(1024)
+                reply, (ip, portIn) = listenSocket.recvfrom(1024)
 
-            if 'Election' in reply.decode():
-                self.election(listenSocket, False, ids)
+                if 'Vote' in reply.decode():
+                    ids += [int(reply.decode().strip().split(': ')[0])]
 
-            if 'Vote' in reply.decode():
-                ids += [int(reply.strip().split(':')[0])]
-                return
+                elif 'R: ' in reply.decode():
+                    self.savedReqs += [(reply, ip, portIn)]
+                    
+                self.election(listenSocket, dataList, False, ids)
+            except TimeoutError:
+                maxID = max(ids)
+                listenSocket.sendto(f'{maxID}: Leader'.encode(), (self.mulGroup, self.port))
 
-            if 'R: ' in reply.decode():
-                self.savedReq = (reply, ip, portIn)
-                self.election(listenSocket, False, ids)
-        except TimeoutError:
-            # maxID = max(ids)
+                print(f'New leader: {maxID}')
+                if maxID == self.ID:
+                    self.isLeader = True
 
-            # print(f'New leader: {maxID}')
-            # if maxID == self.ID:
-            #     self.isLeader = True
-            # listenSocket.sendto(f'{maxID}: Leader'.encode(), (self.mulGroup, self.port))
-            return
-        except Exception as e:
-            print(e)
-
-        maxID = max(ids)
-        listenSocket.sendto(f'{maxID}: Leader'.encode(), (self.mulGroup, self.port))
-
-        if maxID == self.ID and start:
-            print(f'New leader: {maxID}')
-            self.isLeader = True
-        return      
+                dataList[3] = 0
+            except:
+                exit(1)
 
 
     def newRequest(self, message, ip, portIn, dataList, listenSocket):
@@ -167,13 +176,12 @@ class Server:
         print(f'Request {message} from {ip} on port {portIn}, starting new thread')
 
         # Create thread to deal with request 
-        newThread = Thread(target=self.waitForRequests, args=(dataList, message.decode(), ip, portIn, listenSocket))
+        newThread = Thread(target=self.waitForRequests, args=(dataList, message, ip, portIn, listenSocket))
         newThread.start()
         self.threads.append(newThread)
 
         for t in self.threads:
             t.join()
-
 
     def waitForRequests(self, dataList, message, dest, port, connSocket) -> None:
         '''
@@ -191,7 +199,7 @@ class Server:
         # Message is assumed to have the correct format, but not correct
         # data. 
         # See function calls for detials of request handling
-        match message.strip().split()[0].lower():
+        match message.strip().split()[1].lower():
             case 'cars':
                 returnMessage = self.composeCarMessage(dataList)
 
@@ -231,7 +239,7 @@ class Server:
                 returnMessage = 'Invalid request'
                 return
 
-        if self.delayOn:
+        if self.delayOn and 0:
             delay = randint(a=5, b=10)
             sleep(delay)
         if self.isLeader:
@@ -365,7 +373,7 @@ class Server:
         resListFilepath = r'reservations.txt'
 
         # Data structures
-        dataStruct = [[], [], {}]
+        dataStruct = [[], [], {}, 0]
 
         try:
             # Read text files, store info in data structure
@@ -391,9 +399,6 @@ class Server:
                 with open(dateListFilepath, 'r') as dateFile:
                     for date in dateFile:
                         dataStruct[1].append(date.strip())
-        except IOError as e:
-            print(e)
-            exit(1)
         except Exception as e:
             print(e)
             exit(1)
@@ -441,7 +446,7 @@ if __name__ == "__main__":
         server.saveData(data)
         print('Goodbye!')
     except Exception as e:
-        print(e)
+        traceback.print_exc()
         print('Ran into fatal error, saving db before shutting down')
         
     # Attempt to save changes

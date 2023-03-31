@@ -11,18 +11,20 @@ import sys
 import time
 
 MAX_CACHE_TIME = 60
+CACHE_TIME = time.time()
 
-
-def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket: socket, cacheTime: int) -> None:
+def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket: socket) -> None:
 
     # set up socket using dest addr
     address = (destAddr, destPort)
+
+    global CACHE_TIME
 
     # Check cache for info if looking for dates or cars lists
     if 'cars' in message:
         try:
             # Check if cache is still valid
-            if cacheTime > MAX_CACHE_TIME:
+            if time.time() - CACHE_TIME > MAX_CACHE_TIME:
                 raise(FileNotFoundError)
             # if found in cache, print from cache
             with open('.cache\\cars.txt', 'r') as cars: 
@@ -40,11 +42,15 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
                 saveCars = open('.cache\\cars.txt', 'w')
                 saveCars.write(retMessage.decode())
                 saveCars.close()
+
+                CACHE_TIME = time.time() - CACHE_TIME
             except TimeoutError as e:
                 print("Request Timed Out")
 
     elif 'dates' in message:
         try:
+            if time.time() - CACHE_TIME > MAX_CACHE_TIME:
+                raise(FileNotFoundError)
             with open('.cache\\dates.txt', 'r') as dates: 
                 print('From cache:\n\n')
                 for line in dates:
@@ -60,6 +66,8 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
                 saveDates = open('.cache\\cars.txt', 'w')
                 saveDates.write(retMessage.decode())
                 saveDates.close()
+
+                CACHE_TIME = time.time() - CACHE_TIME
             except TimeoutError as e:
                 print("Request Timed Out")
     else:
@@ -74,11 +82,11 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
             print(e)
             print("Request Timed Out")
 
-        while 1:
-            try:
-                clientSocket.recv(2048)
-            except TimeoutError:
-                break
+    while 1:
+        try:
+            clientSocket.recv(2048)
+        except TimeoutError:
+            break
 
 
 def start_client_UI(destAddr, destPort, test):
@@ -98,7 +106,7 @@ def start_client_UI(destAddr, destPort, test):
     # Send each message in sequence and print response, wait half a second between responses
         for message in messages:
             print(f'Request: {message}\nResponse:')
-            client_packet_send(destAddr, destPort, f'R: {message}', clientSocket)
+            client_packet_send(destAddr, destPort, f'R: {message}', clientSocket, )
             time.sleep(0.5)
 
         clientSocket.close()
@@ -128,7 +136,7 @@ if __name__ == "__main__":
 
     test = False
     try:
-        test = sys.argv[3]
+        test = sys.argv[3] == 'True'
     except IndexError:
         test = False
     try:
