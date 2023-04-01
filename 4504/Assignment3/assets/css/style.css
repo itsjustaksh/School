@@ -161,3 +161,44 @@ table{
 .no-show{
    display: none;
 }
+
+.center{
+   display: block;
+   margin: auto;
+}
+
+#login-container{
+   display: block;
+   margin: auto;
+   padding: 0;
+}
+
+#login-heading{
+   font-size: 1.7em;
+   margin-bottom: 1rem;
+   font-weight: normal;
+   width: fit-content;
+}
+
+#login-form p{
+   padding: 0;
+}
+
+#login-form input{
+   display: block;
+   margin-left: 1em;
+   height: 2em;
+   width: 80%;
+   max-width: 15rem;
+   border: 1px lightslategray solid;
+   border-radius: 8px;
+}
+
+#login-form-container{
+   width: 30%;
+}
+
+#submit-login{
+   background-color: #545e90;
+   color: #E8EAF6;
+}

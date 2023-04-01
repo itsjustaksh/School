@@ -2,9 +2,21 @@
 <html lang="en">
 
 <head>
+    <?php
+    session_start();
+
+    if (!isset($_SESSION['start'])) {
+        $_SESSION['start'] = time();
+    }
+    ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
     <title>SyscBook Login</title>
+    <?php
+        include("connection.php");
+    ?>
 </head>
 
 <body>
@@ -14,7 +26,7 @@
     </header>
     <nav>
         <ul class="navbar">
-            <li id="home-nav-link">
+            <li class="no-show" id="home-nav-link">
                 <a href="index.php"><strong>Home</strong></a>
             </li>
             <li class="no-show" id="profile-nav-link">
@@ -24,24 +36,32 @@
                 <a href="register.php"><strong>Register</strong></a>
             </li>
             <li class="no-show" id="logout-nav-link">
-                <a href="index.php"><strong>Logout</strong></a>
+                <a href="login.php"><strong>Logout</strong></a>
+            </li>
+            <li>
+                <a href="login.php"><strong>Login</strong></a>
             </li>
         </ul>
     </nav>
 
     <main>
-        <div class="login-container">
-            <form action="" method="post">
+        
+        <?php login(); ?>
+        <div id="login-container">
+            <h1 id="login-heading" class="center">Login</h1>
+            <form action="" method="post" id="login-form">
                 <fieldset>
-                    <label for="login-email">
-                        <p>Username/email: </p>
-                    </label>
-                    <input type="email" name="login-email" id="login-email" placeholder="Username">
-                    <label for="password-box">
-                        <p>Password: </p>
-                    </label>
-                    <input type="password" name="password-box" id="password-box" placeholder="Password">
-                    <input type="submit" value="Login" name="login">
+                    <div class="center" id="login-form-container">
+                        <label for="login-email">
+                            <p>Email: </p>
+                        </label>
+                        <input type="email" name="login-email" id="login-email" placeholder="email@domain.ca">
+                        <label for="password-box">
+                            <p>Password: </p>
+                        </label>
+                        <input type="password" name="password-box" id="password-box" placeholder="********">
+                        <input id="submit-login" type="submit" value="Login" name="login">
+                    </div>
                 </fieldset>
             </form>
         </div>

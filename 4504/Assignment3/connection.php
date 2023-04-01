@@ -35,8 +35,8 @@ function processRegister()
         $empty = NULL;
         $zero = 0;
 
-        $_SESSION['fName'] = $_POST['first_name'];
         $_SESSION['lName'] = $_POST['last_name'];
+        $_SESSION['fName'] = $_POST['first_name'];
         $_SESSION['dob'] = $_POST['DOB'];
         $_SESSION['email'] = $_POST['student_email'];
         $_SESSION['prog'] = $_POST['Program'];
@@ -53,9 +53,7 @@ function processRegister()
             $toDB->bind_param("ssss", ...[$_SESSION['email'], $_SESSION['fName'], $_SESSION['lName'], $_SESSION['dob']]);
             $toDB->execute();
 
-            $idQuery = "SELECT student_id FROM users_info WHERE student_email = '" . $_SESSION['email'] . "'";
-
-            $_SESSION['id'] = $conn->query($idQuery)->fetch_assoc()['student_id'];
+            $_SESSION['id'] = $toDB->insert_id;
 
             $toDB = $conn->prepare($progQuery);
             $toDB->bind_param("is", $_SESSION['id'], $program);
@@ -197,5 +195,33 @@ function processNewPost()
 
         $toDB->close();
         $conn->close();
+    }
+}
+
+function login(){
+    if (isset($_SESSION['login-email'])){
+        
+        $loginQ = "SELECT password FROM users_passwords WHERE student_id=";
+        $idQ = "SELECT student_id from users_info WHERE email=?";
+        
+        try {
+            
+            $conn = connect();
+            $id = $conn->prepare($idQ);
+            $id->bind_param('', ...[$_SESSION['login-email']]);
+            $id->execute();
+            
+            print("<br><p>Results: ".$id->get_result()."</p><br>");
+            // $pass = $conn->query($loginQ.$id->get_result())->fetch_assoc();
+        } catch (\Throwable $th) {
+            try {
+                $id->close();
+                $conn->close();
+            } catch (\Throwable $th) {
+                die(1);
+            }
+            die(1);
+        }
+
     }
 }
