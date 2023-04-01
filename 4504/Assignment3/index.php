@@ -13,7 +13,11 @@
   <title>SYSCBOOK - Main</title>
   <link rel="stylesheet" href="assets/css/reset.css" />
   <link rel="stylesheet" href="assets/css/style.css" />
-  <?php include("connection.php"); ?>
+  <?php isLoggedIn();
+  include("connection.php");
+
+  ?>
+
 </head>
 
 <body>
@@ -24,16 +28,19 @@
   <nav>
     <ul class="navbar">
       <li>
-        <a href="index.php"><strong>Home</strong></a>
+        <a href="index.php" id="home-nav-link"><strong>Home</strong></a>
       </li>
       <li>
-        <a href="profile.php"><strong>Profile</strong></a>
+        <a href="profile.php" id="profile-nav-link"><strong>Profile</strong></a>
       </li>
       <li>
-        <a href="register.php"><strong>Register</strong></a>
+        <a href="register.php" id="register-nav-link"><strong>Register</strong></a>
       </li>
       <li>
-        <a href="index.php"><strong>Logout</strong></a>
+        <a href="login.php" id="logout-nav-link"><strong>Logout</strong></a>
+      </li>
+      <li>
+        <a href="login.php"><strong>Login</strong></a>
       </li>
     </ul>
   </nav>
@@ -65,10 +72,18 @@
         </fieldset>
       </form>
 
-      <?php processNewPost(); ?>
+      <?php
+      if (isset($_SESSION['ID'])) {
+        processNewPost();
+      }
+      ?>
 
-      <?php showPosts(); ?>
-      
+      <?php
+      if (isset($_SESSION['ID'])) {
+        showPosts();
+      }
+      ?>
+
     </section>
   </main>
 </body>

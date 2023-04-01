@@ -14,7 +14,11 @@
   <link rel="stylesheet" href="assets/css/reset.css" />
   <link rel="stylesheet" href="assets/css/style.css" />
   <script type="text/javascript" src="assets/js/profile.js"></script>
-  <?php include("connection.php"); processProfile(); ?>
+  <?php
+  isLoggedIn();
+  include("connection.php");
+  processProfile();
+  ?>
 </head>
 
 <body>
@@ -25,16 +29,19 @@
   <nav>
     <ul class="navbar">
       <li>
-        <a href="index.php"><strong>Home</strong></a>
+        <a href="index.php" id="home-nav-link"><strong>Home</strong></a>
       </li>
       <li>
-        <a href="profile.php"><strong>Profile</strong></a>
+        <a href="profile.php" id="profile-nav-link"><strong>Profile</strong></a>
       </li>
       <li>
-        <a href="register.php"><strong>Register</strong></a>
+        <a href="register.php" id="register-nav-link"><strong>Register</strong></a>
       </li>
       <li>
-        <a href="index.php"><strong>Logout</strong></a>
+        <a href="index.php" id="logout-nav-link"><strong>Logout</strong></a>
+      </li>
+      <li>
+        <a href="login.php"><strong>Login</strong></a>
       </li>
     </ul>
   </nav>

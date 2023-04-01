@@ -25,16 +25,19 @@
   <nav>
     <ul class="navbar">
       <li>
-        <a href="index.php"><strong>Home</strong></a>
+        <a href="index.php" id="home-nav-link"><strong>Home</strong></a>
+      </li>
+      <li class="no-show">
+        <a href="profile.php" id="profile-nav-link"><strong>Profile</strong></a>
       </li>
       <li>
-        <a href="profile.php"><strong>Profile</strong></a>
+        <a href="register.php" id="register-nav-link"><strong>Register</strong></a>
       </li>
       <li>
-        <a href="register.php"><strong>Register</strong></a>
+        <a href="login.php" id="logout-nav-link"><strong>Logout</strong></a>
       </li>
       <li>
-        <a href="index.php"><strong>Logout</strong></a>
+        <a href="login.php"><strong>Login</strong></a>
       </li>
     </ul>
   </nav>
@@ -92,7 +95,7 @@
                   </label>
                   <input type="email" name="student_email" />
                   <label for="password-n">
-                    <p> New Password</p>
+                    <p>New Password</p>
                   </label>
                   <input type="password" name="password-n" id="password-n">
                   <label for="password-c">
