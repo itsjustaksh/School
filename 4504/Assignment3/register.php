@@ -13,6 +13,10 @@
   <title>Register on SYSCBOOK</title>
   <link rel="stylesheet" href="assets/css/reset.css" />
   <link rel="stylesheet" href="assets/css/style.css" />
+  <script>
+    let id = "<?php $session_value=(isset($_SESSION['id']))?$_SESSION['id']:''; ?>";
+  </script>
+  <script src="assets/js/register.js"></script>
   <?php include("connection.php");
   processRegister(); ?>
 </head>
@@ -34,17 +38,17 @@
         <a href="register.php" id="register-nav-link"><strong>Register</strong></a>
       </li>
       <li>
-        <a href="login.php" id="logout-nav-link"><strong>Logout</strong></a>
+        <a href="logout.php" id="logout-nav-link"><strong>Logout</strong></a>
       </li>
       <li>
-        <a href="login.php"><strong>Login</strong></a>
+        <a href="login.php" id="login-nav-link"><strong>Login</strong></a>
       </li>
     </ul>
   </nav>
   <main>
     <section>
       <h2>Register a new profile</h2>
-      <form method="POST" action="">
+      <form method="POST" action="" id="register-form">
         <fieldset>
           <table>
             <tbody>
@@ -75,6 +79,12 @@
                   <input type="date" name="DOB" id="profile_dob_input" />
                 </td>
               </tr>
+              <tr>
+                <td colspan="3">
+                  <p class="no-show error-message" id="fname-error">Registration Failed: Missing First Name</p>
+                  <p class="no-show error-message" id="lname-error">Registration Failed: Missing Last Name</p>
+                </td>
+              </tr>
             </tbody>
           </table>
         </fieldset>
@@ -94,6 +104,8 @@
                     <p>Email address:</p>
                   </label>
                   <input type="email" name="student_email" />
+                </td>
+                <td class="profile-rows">
                   <label for="password-n">
                     <p>New Password</p>
                   </label>
@@ -102,6 +114,15 @@
                     <p>Confirm Password</p>
                   </label>
                   <input type="password" name="password-c" id="password-c">
+                </td>
+                <td class="profile-rows">
+                  <p class="no-show error-message" id="pass-error">Registration Failed: Passwords must match</p>
+                  <p class="no-show error-message" id="email-error">Registration Failed: Missing Email</p>
+                  <?php
+                  if (isset($_SESSION['bad_email'])) {
+                    echo('<p class="error-message">Registration Failed: Email already in use</p>');
+                  }
+                  ?>
                 </td>
               </tr>
               <tr>

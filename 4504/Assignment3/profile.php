@@ -13,10 +13,13 @@
   <title>Update SYSCBOOK profile</title>
   <link rel="stylesheet" href="assets/css/reset.css" />
   <link rel="stylesheet" href="assets/css/style.css" />
+  <script>
+    let id = "<?php $session_value = (isset($_SESSION['id'])) ? $_SESSION['id'] : ''; ?>";
+  </script>
   <script type="text/javascript" src="assets/js/profile.js"></script>
   <?php
-  isLoggedIn();
   include("connection.php");
+  isLoggedIn();
   processProfile();
   ?>
 </head>
@@ -35,13 +38,7 @@
         <a href="profile.php" id="profile-nav-link"><strong>Profile</strong></a>
       </li>
       <li>
-        <a href="register.php" id="register-nav-link"><strong>Register</strong></a>
-      </li>
-      <li>
-        <a href="index.php" id="logout-nav-link"><strong>Logout</strong></a>
-      </li>
-      <li>
-        <a href="login.php"><strong>Login</strong></a>
+        <a href="logout.php" id="logout-nav-link"><strong>Logout</strong></a>
       </li>
     </ul>
   </nav>
@@ -53,7 +50,7 @@
         ?>
       </div>
       <h2>Update Profile information</h2>
-      <form method="POST" action="">
+      <form method="POST" action="" id="profile-form">
         <fieldset>
           <table>
             <tbody>
@@ -82,6 +79,12 @@
                     <p>Date of Birth:</p>
                   </label>
                   <input name="DOB" type="date" name="DOB" id="profile_dob_input" />
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <p class="no-show error-message" id="fname-error">Registration Failed: Missing First Name</p>
+                  <p class="no-show error-message" id="lname-error">Registration Failed: Missing Last Name</p>
                 </td>
               </tr>
             </tbody>
@@ -150,6 +153,11 @@
                     <p>Email address:</p>
                   </label>
                   <input name="student_email" type="email" />
+                  <?php
+                  if (isset($_SESSION['bad_email'])) {
+                    echo ('<p class="error-message">Registration Failed: Email already in use</p>');
+                  }
+                  ?>
                 </td>
               </tr>
               <tr>

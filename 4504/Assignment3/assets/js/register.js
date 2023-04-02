@@ -1,33 +1,24 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const inputs = document.querySelectorAll(".no-show input");
-    let valList = new Object;
-    let id;
-    let val;
 
-    inputs.forEach(element => {
-        id = element.getAttribute("id");
-        val = element.getAttribute("value");
+    const homeA = document.getElementById('home-nav-link').parentElement;
+    const logoutA = document.getElementById('logout-nav-link').parentElement;
+    const loginA = document.getElementById('login-nav-link').parentElement;
 
-        valList[id] = val;
-    });
-
-    const fieldsToFill = document.querySelectorAll(".profile-rows>input");
-
-    fieldsToFill.forEach(item => {
-        if (valList[item.getAttribute('name')]) {
-            item.setAttribute('value', valList[item.getAttribute('name')]);
-        }
-    });
-
-
-    const selectTag = document.querySelector('.profile-rows>select');
-    selectTag.value = valList[selectTag.getAttribute('name')];
-
+    if (id == ''){
+        homeA.style.display = 'none';
+        logoutA.style.display = 'none';
+        loginA.style.display = 'inherit';
+    }
+    else{
+        loginA.style.display = 'none';
+        homeA.style.display = 'inherit';
+        logoutA.style.display = 'inherit';
+    }
 
     const form = document.getElementById('register-form');
 
     form.addEventListener('submit', (event) => {
-        let pass = validateProfile();
+        let pass = validateRegister();
 
         if (!pass) {
             event.stopPropagation();
@@ -35,13 +26,27 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    function validateProfile() {
+
+
+    function validateRegister() {
+        const newPass = document.getElementById('password-n');
+        const passConf = document.getElementById('password-c');
+        const passError = document.getElementById('pass-error');
         let pass = false;
+
+        // Check for existing same passwords
+        if (newPass.value == passConf.value && checkLen(newPass)) {
+            pass = true;
+            passError.classList.add('no-show');
+        }
+        else{
+            passError.classList.remove('no-show');
+        }
 
         // Check if first name exists
         if (checkLen(document.querySelector('.profile-rows>input[name="first_name"]'))) {
             document.getElementById('fname-error').classList.add('no-show');
-            pass = true;
+            pass = true && pass;
         }
         else {
             document.getElementById('fname-error').classList.remove('no-show');
@@ -74,5 +79,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return pass;
     }
-
 });

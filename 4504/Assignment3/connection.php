@@ -30,6 +30,7 @@ function processRegister()
         $avatarQuery = "INSERT INTO users_avatar (student_id, avatar) VALUES (?,?);";
         $addrQuery = "INSERT INTO users_address (student_id, street_num, street_name, city, province, postal_code) 
                     VALUES (?,?,?,?,?,?);";
+        $passQuery = "INSERT INTO users_passwords (student_id, pass) VALUES (?,?)";
         $conn = connect();
 
         $empty = NULL;
@@ -40,15 +41,23 @@ function processRegister()
         $_SESSION['dob'] = $_POST['DOB'];
         $_SESSION['email'] = $_POST['student_email'];
         $_SESSION['prog'] = $_POST['Program'];
+        $pass = password_hash($_POST['password-n'], PASSWORD_BCRYPT);
+
 
         try {
-            $emailQuery = "SELECT * FROM users_info WHERE student_email='".$_SESSION['email']."'";
-            if ($conn->query($emailQuery)->fetch_assoc()) {
-                // Write to JS to display error, don't submit form
+            $checkEmail = "SELECT student_email FROM users_info WHERE student_email=?";
+            $toDB = $conn->prepare($checkEmail);
+            $toDB->execute([$_SESSION['email']]);
+            if ($toDB->get_result()->fetch_assoc()) {
+                // Email in use, try again
+                $_SESSION['bad_email'] = true;
 
                 return;
             }
-
+            else{
+                unset($_SESSION['bad_email']);
+            }
+            
             $toDB = $conn->prepare($infoQuery);
             $toDB->bind_param("ssss", ...[$_SESSION['email'], $_SESSION['fName'], $_SESSION['lName'], $_SESSION['dob']]);
             $toDB->execute();
@@ -65,6 +74,10 @@ function processRegister()
 
             $toDB = $conn->prepare($addrQuery);
             $toDB->bind_param("iissss", $_SESSION['id'], $zero, $empty, $empty, $empty, $empty);
+            $toDB->execute();
+
+            $toDB = $conn->prepare($passQuery);
+            $toDB->bind_param("is", $_SESSION['id'], $pass);
             $toDB->execute();
 
             $toDB->close();
@@ -120,8 +133,28 @@ function processProfile()
         $province = $_POST['province'];
         $postal_code = $_POST['postal_code'];
         $avatar = $_POST['avatar'];
+        $_SESSION['lName'] = $_POST['last_name'];
+        $_SESSION['fName'] = $_POST['first_name'];
+        $_SESSION['dob'] = $_POST['DOB'];
+        $_SESSION['email'] = $_POST['student_email'];
+        $_SESSION['prog'] = $_POST['Program'];
 
         try {
+            $checkEmail = "SELECT student_id, student_email FROM users_info WHERE student_email=?";
+            $toDB = $conn->prepare($checkEmail);
+            $toDB->execute([$_SESSION['email']]);
+            $result = $toDB->get_result()->fetch_assoc();
+            if ($result) {
+                // Email in use, try again
+                if ($_SESSION['id'] != $result['student_id']) {
+                    $_SESSION['bad_email'] = true;
+                    return;
+                }
+            }
+            else{
+                unset($_SESSION['bad_email']);
+            }
+
             $toDB = $conn->prepare($addrQuery);
             $toDB->bind_param("issssi", ...[$street_number, $street_name, $city, $province, $postal_code, $_SESSION['id']]);
             $toDB->execute();
@@ -131,7 +164,7 @@ function processProfile()
             $toDB->execute();
 
             $toDB = $conn->prepare($infoQuery);
-            $toDB->bind_param("ssssi", ...[$_SESSION['email'], $_SESSION['fName'], $_SESSION['lName'], $_SESSION['email'], $_SESSION['id']]);
+            $toDB->bind_param("ssssi", ...[$_SESSION['email'], $_SESSION['fName'], $_SESSION['lName'], $_SESSION['dob'], $_SESSION['id']]);
             $toDB->execute();
 
             $toDB = $conn->prepare($progQuery);
@@ -171,6 +204,9 @@ function showPosts()
             print($postStructure);
         }
     }
+    else{
+        header("Location: login.php");
+    }
 }
 
 function processNewPost()
@@ -198,22 +234,49 @@ function processNewPost()
     }
 }
 
-function login(){
-    if (isset($_SESSION['login-email'])){
+function processLogin(){
+    // If already logged in, log out and come back here
+    if (isset($_SESSION['id'])) {
+        header('Location: logout.php');
+    }
+
+    // If attempting to log in, gather info
+    if (isset($_POST['login-email'])){
         
-        $loginQ = "SELECT password FROM users_passwords WHERE student_id=";
-        $idQ = "SELECT student_id from users_info WHERE email=?";
+        $loginQ = "SELECT pass FROM users_passwords WHERE student_id=?";
+        $idQ = "SELECT student_id from users_info WHERE student_email=?";
         
         try {
-            
             $conn = connect();
             $id = $conn->prepare($idQ);
-            $id->bind_param('', ...[$_SESSION['login-email']]);
+            $id->bind_param('s', ...[$_POST['login-email']]);
             $id->execute();
-            
-            print("<br><p>Results: ".$id->get_result()."</p><br>");
-            // $pass = $conn->query($loginQ.$id->get_result())->fetch_assoc();
+
+            $idRes = $id->get_result()->fetch_assoc();
+            if (!isset($idRes)) {
+                // Write to JS to display error, don't submit form
+                echo("<p class='error-message center'>No account registered with that email</p>");
+
+                return;
+            }
+
+            $pass = $conn->prepare($loginQ);
+            $pass->execute([$idRes['student_id']]);
+            $passHash = $pass->get_result()->fetch_assoc()['pass'];
+
+            if (password_verify($_POST['password-box'], $passHash)) {
+                $_SESSION['id'] = $idRes['student_id'];
+            }
+            else {
+                echo("<p class='error-message'>Email/password does not match</p>");
+                unset($_SESSION['id']);
+
+                return;
+            }
+
+            header('Location: index.php');
         } catch (\Throwable $th) {
+            echo($th);
             try {
                 $id->close();
                 $conn->close();

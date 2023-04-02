@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="assets/css/style.css" />
     <title>SyscBook Login</title>
     <?php
-        include("connection.php");
+    include("connection.php");
     ?>
 </head>
 
@@ -45,11 +45,14 @@
     </nav>
 
     <main>
-        
-        <?php login(); ?>
         <div id="login-container">
             <h1 id="login-heading" class="center">Login</h1>
-            <form action="" method="post" id="login-form">
+            <div>
+                <?php
+                processLogin();
+                ?>
+            </div>
+            <form action="" method="POST" id="login-form">
                 <fieldset>
                     <div class="center" id="login-form-container">
                         <label for="login-email">

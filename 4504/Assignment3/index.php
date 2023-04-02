@@ -13,9 +13,12 @@
   <title>SYSCBOOK - Main</title>
   <link rel="stylesheet" href="assets/css/reset.css" />
   <link rel="stylesheet" href="assets/css/style.css" />
-  <?php isLoggedIn();
+  <script>
+    let id = "<?php $session_value=(isset($_SESSION['id']))?$_SESSION['id']:''; ?>";
+  </script>
+  <script src="assets/js/home.js"></script>
+  <?php
   include("connection.php");
-
   ?>
 
 </head>
@@ -34,19 +37,14 @@
         <a href="profile.php" id="profile-nav-link"><strong>Profile</strong></a>
       </li>
       <li>
-        <a href="register.php" id="register-nav-link"><strong>Register</strong></a>
-      </li>
-      <li>
-        <a href="login.php" id="logout-nav-link"><strong>Logout</strong></a>
-      </li>
-      <li>
-        <a href="login.php"><strong>Login</strong></a>
+        <a href="logout.php" id="logout-nav-link"><strong>Logout</strong></a>
       </li>
     </ul>
   </nav>
 
   <main>
     <section>
+      <?php isLoggedIn(); ?>
       <form method="POST" action="">
         <fieldset>
           <table>
@@ -73,13 +71,13 @@
       </form>
 
       <?php
-      if (isset($_SESSION['ID'])) {
+      if (isset($_SESSION['id'])) {
         processNewPost();
       }
       ?>
 
       <?php
-      if (isset($_SESSION['ID'])) {
+      if (isset($_SESSION['id'])) {
         showPosts();
       }
       ?>
