@@ -23,6 +23,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const selectTag = document.querySelector('.profile-rows>select');
     selectTag.value = valList[selectTag.getAttribute('name')];
 
+    const usersA = document.getElementById('user-list-link');
+    if (admin == 'True') {
+        usersA.style.display = 'block';
+    }
 
     const form = document.getElementById('register-form');
 

@@ -14,7 +14,12 @@
   <link rel="stylesheet" href="assets/css/reset.css" />
   <link rel="stylesheet" href="assets/css/style.css" />
   <script>
-    let id = "<?php $session_value=(isset($_SESSION['id']))?$_SESSION['id']:''; ?>";
+    <?php
+    $currID = (isset($_SESSION['id'])) ? $_SESSION['id'] : '';
+    $currAdmin = (isset($_SESSION['admin'])) ? $_SESSION['admin'] : 'False';
+    ?>
+    let id = "<?php echo($currID); ?>";
+    let admin = "<?php echo($currAdmin); ?>";
   </script>
   <script src="assets/js/home.js"></script>
   <?php
@@ -38,6 +43,9 @@
       </li>
       <li>
         <a href="logout.php" id="logout-nav-link"><strong>Logout</strong></a>
+      </li>
+      <li style="display: none;">
+        <a href="user_list.php" id="user-list-link"><strong>User List</strong></a>
       </li>
     </ul>
   </nav>

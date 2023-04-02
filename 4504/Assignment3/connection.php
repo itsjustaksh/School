@@ -30,11 +30,13 @@ function processRegister()
         $avatarQuery = "INSERT INTO users_avatar (student_id, avatar) VALUES (?,?);";
         $addrQuery = "INSERT INTO users_address (student_id, street_num, street_name, city, province, postal_code) 
                     VALUES (?,?,?,?,?,?);";
-        $passQuery = "INSERT INTO users_passwords (student_id, pass) VALUES (?,?)";
+        $passQuery = "INSERT INTO users_passwords (student_id, pass) VALUES (?,?);";
+        $accQuery = "INSERT INTO users_permissions (student_id, acc_type) VALUES (?,?);";
         $conn = connect();
 
         $empty = NULL;
         $zero = 0;
+        $one = 1;
 
         $_SESSION['lName'] = $_POST['last_name'];
         $_SESSION['fName'] = $_POST['first_name'];
@@ -78,6 +80,10 @@ function processRegister()
 
             $toDB = $conn->prepare($passQuery);
             $toDB->bind_param("is", $_SESSION['id'], $pass);
+            $toDB->execute();
+
+            $toDB = $conn->prepare($accQuery);
+            $toDB->bind_param("is", $_SESSION['id'], $one);
             $toDB->execute();
 
             $toDB->close();
@@ -185,6 +191,7 @@ function processProfile()
 function showPosts()
 {
     if (isset($_SESSION['id'])) {
+        echo($_SESSION['admin']);
         $conn = connect();
         $postQuery = "SELECT * FROM users_posts ORDER BY post_id DESC LIMIT 10";
         $results = $conn->query($postQuery);
@@ -274,6 +281,17 @@ function processLogin(){
                 return;
             }
 
+            $adminQ = "SELECT acc_type FROM users_permissions WHERE student_id=?";
+            $stmt = $conn->prepare($adminQ);
+            $stmt->execute([$idRes['student_id']]);
+
+            if ($stmt->get_result()->fetch_assoc()['acc_type'] == 0) {
+                $_SESSION['admin'] = 'True';
+            }
+            else{
+                unset($_SESSION['admin']);
+            }
+
             header('Location: index.php');
         } catch (\Throwable $th) {
             echo($th);
@@ -286,5 +304,31 @@ function processLogin(){
             die(1);
         }
 
+    }
+}
+
+function displayUsers()
+{
+    $conn = connect();
+    $listQuery = "SELECT users_info.student_id, f_name, l_name, student_email, users_program.program 
+        FROM users_info INNER JOIN users_program ON users_program.student_id = users_info.student_id;";
+
+    try {
+        $userList = $conn->query($listQuery);
+        while ($user = $userList->fetch_assoc()) {
+            echo("<tr>");
+            foreach ($user as $key => $value) {
+                echo("<td style='text-align: center;'>$value</td>");
+            }
+            echo("</tr>");
+        }
+    } catch (\Throwable $th) {
+        echo($th);
+        try {
+            $conn->close();
+        } catch (\Throwable $th) {
+            die(1);
+        }
+        die(1);
     }
 }
