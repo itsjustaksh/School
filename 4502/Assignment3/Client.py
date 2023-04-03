@@ -5,13 +5,15 @@
 # Client.py
 
 # Imports
+from functools import cache
 import os, shutil
 from socket import *
 import sys
 import time
 
 MAX_CACHE_TIME = 60
-CACHE_TIME = time.time()
+CACHE_TIME = 0
+ID = os.getpid()
 
 def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket: socket) -> None:
 
@@ -19,15 +21,19 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
     address = (destAddr, destPort)
 
     global CACHE_TIME
+    global ID
+
+    cachePth = f'.cache\\{ID}'
 
     # Check cache for info if looking for dates or cars lists
     if 'cars' in message:
+
         try:
             # Check if cache is still valid
             if time.time() - CACHE_TIME > MAX_CACHE_TIME:
                 raise(FileNotFoundError)
             # if found in cache, print from cache
-            with open('.cache\\cars.txt', 'r') as cars: 
+            with open(f'{cachePth}\\cars.txt', 'r') as cars: 
                 print("From cache:\n\n")
                 for line in cars:
                     print(line)
@@ -39,7 +45,7 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
                 retMessage = clientSocket.recv(2048)
                 print(retMessage.decode(),'\n\n')
 
-                saveCars = open('.cache\\cars.txt', 'w')
+                saveCars = open(f'{cachePth}\\cars.txt', 'w')
                 saveCars.write(retMessage.decode())
                 saveCars.close()
 
@@ -51,7 +57,7 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
         try:
             if time.time() - CACHE_TIME > MAX_CACHE_TIME:
                 raise(FileNotFoundError)
-            with open('.cache\\dates.txt', 'r') as dates: 
+            with open(f'{cachePth}\\dates.txt', 'r') as dates: 
                 print('From cache:\n\n')
                 for line in dates:
                     print(line)
@@ -63,7 +69,7 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
                 retMessage = clientSocket.recv(2048)
                 print(retMessage.decode(),'\n\n')
 
-                saveDates = open('.cache\\cars.txt', 'w')
+                saveDates = open(f'{cachePth}\\cars.txt', 'w')
                 saveDates.write(retMessage.decode())
                 saveDates.close()
 
@@ -90,7 +96,9 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
 
 
 def start_client_UI(destAddr, destPort, test):
-    os.makedirs('.cache')
+    global ID
+    if not os.path.isdir(f'.cache\\{ID}'):
+        os.makedirs('.cache')
     # Sequence of messages to test with
     messages = ['cars', 'dates', 'check BMWX1', 'reserve BMWX1 Wednesday-2023-02-08', 'check BMWX1',
                 'delete BMWX1 Wednesday-2023-02-08', 'check BMWX1', 'reserve BMWX1 Sunday-2023-02-19', 
@@ -143,7 +151,7 @@ if __name__ == "__main__":
         start_client_UI(destAddr, destPort, test)
     except KeyboardInterrupt:
         try:
-            shutil.rmtree('.cache', False)
+            shutil.rmtree(f'.cache\\{ID}', False)
             exit(0)
         except Exception as e:
             exit(1)

@@ -11,18 +11,19 @@ from threading import Lock, Thread, Event, get_native_id
 import sys, os
 from time import sleep, time
 import traceback
+from turtle import delay
 
 event = Event()
 dataLock = Lock()
 
 class Server:
 
-    def __init__(self, portNum=62002, mulIP='224.0.0.10', pid=os.getpid(), delay=False) -> None:
+    def __init__(self, portNum=62002, mulIP='224.0.0.10', pid=os.getpid(), delay=True) -> None:
         '''
         Initiate class and populate data structures from text files (database)
         '''
 
-        self.maxLonelyTime = 20
+        self.maxLonelyTime = 10
         self.port = portNum
         self.mulGroup = mulIP
         self.serverSocket = socket(AF_INET, SOCK_DGRAM)
@@ -31,10 +32,13 @@ class Server:
         self.resListFilepath = 'reservations.txt'
         self.delayOn = delay
         self.isLeader = False
-        self.ID = pid
         self.lonelyUptime = time()
         self.savedReqs = []
-
+        try:
+            self.ID = int(pid)
+        except ValueError:
+            print('ID must be of type <int>. Starting using os pid as ID')
+            self.ID = int(os.getpid())
 
         # Assign IP address and port number to socket
         # using loopback address
@@ -134,36 +138,42 @@ class Server:
                     if 'R: ' in reply:
                         self.savedReqs += [(reply, ip, portIn)]
         except TimeoutError:
-            sleep(random.random())
+            sleep(round(random.random()*2, 2))
             with dataLock:
                 if not dataList[3]:
-                    print(f'Leader dead, {self.ID} starting new election')
                     dataList[3] = self.ID
+                    print(f'Leader dead, {self.ID} starting new election')
             
                 self.election(listenSocket, dataList)
 
-    def election(self, listenSocket, dataList, start=True, ids=[]):
+    def election(self, listenSocket, dataList, ids=[]):
         if dataList[3] == self.ID:
             try:
-                if start:
-                    ids = [self.ID]
-                    listenSocket.sendto(f'{self.ID}: Election'.encode(), (self.mulGroup, self.port))
+                ids = [self.ID]
+                print('First: ',type(self.ID))
+                listenSocket.sendto(f'{self.ID}: Election'.encode(), (self.mulGroup, self.port))
 
                 reply, (ip, portIn) = listenSocket.recvfrom(1024)
 
-                if 'Vote' in reply.decode():
-                    ids += [int(reply.decode().strip().split(': ')[0])]
+                while reply:
+                    if 'Vote' in reply.decode():
+                        ids.append(int(reply.decode().strip().split(': ')[0]))
 
-                elif 'R: ' in reply.decode():
-                    self.savedReqs += [(reply, ip, portIn)]
+                    elif 'R: ' in reply.decode():
+                        self.savedReqs += [(reply, ip, portIn)]
+
+                    reply, (ip, portIn) = listenSocket.recvfrom(1024)
                     
-                self.election(listenSocket, dataList, False, ids)
             except TimeoutError:
+                for id in ids:
+                    print('Rest: ', type(id))
                 maxID = max(ids)
                 listenSocket.sendto(f'{maxID}: Leader'.encode(), (self.mulGroup, self.port))
 
                 print(f'New leader: {maxID}')
+                print(f'My ID: {self.ID}')
                 if maxID == self.ID:
+                    print("That's me!!")
                     self.isLeader = True
 
                 dataList[3] = 0
@@ -239,7 +249,7 @@ class Server:
                 returnMessage = 'Invalid request'
                 return
 
-        if self.delayOn and 0:
+        if self.delayOn:
             delay = randint(a=5, b=10)
             sleep(delay)
         if self.isLeader:
@@ -406,6 +416,7 @@ class Server:
         # Find Leader
         try:
             self.heartbeat(self.serverSocket, dataStruct)
+            print(f'Leader Status: {self.isLeader}, Server ID: {self.ID}')
         except Exception as e:
             print(e)
             print('Heartbeat error, assuming I\'m leader')
@@ -436,8 +447,14 @@ if __name__ == "__main__":
     except IndexError:
         id = os.getpid()
 
+    # Find value for pid if it's passed in, if not assign one
+    try:
+        delay = sys.argv[4]
+    except IndexError:
+        delay = True
+
     # Start server
-    server = Server(portNum=port_num, mulIP=mulCastIP, pid=id)
+    server = Server(portNum=port_num, mulIP=mulCastIP, pid=id, delay=delay)
     try:
         data = server.start()
         if data:
