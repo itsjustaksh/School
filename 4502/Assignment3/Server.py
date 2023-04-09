@@ -18,7 +18,7 @@ dataLock = Lock()
 
 class Server:
 
-    def __init__(self, portNum=62002, mulIP='224.0.0.10', pid=os.getpid(), delay=True) -> None:
+    def __init__(self, portNum=62002, mulIP='224.0.0.10', pid=os.getpid()) -> None:
         '''
         Initiate class and populate data structures from text files (database)
         '''
@@ -30,7 +30,6 @@ class Server:
         self.encoding = 'utf-8'
         self.threads = []
         self.resListFilepath = 'reservations.txt'
-        self.delayOn = delay
         self.isLeader = False
         self.lonelyUptime = time()
         self.savedReqs = []
@@ -150,7 +149,6 @@ class Server:
         if dataList[3] == self.ID:
             try:
                 ids = [self.ID]
-                print('First: ',type(self.ID))
                 listenSocket.sendto(f'{self.ID}: Election'.encode(), (self.mulGroup, self.port))
 
                 reply, (ip, portIn) = listenSocket.recvfrom(1024)
@@ -165,8 +163,6 @@ class Server:
                     reply, (ip, portIn) = listenSocket.recvfrom(1024)
                     
             except TimeoutError:
-                for id in ids:
-                    print('Rest: ', type(id))
                 maxID = max(ids)
                 listenSocket.sendto(f'{maxID}: Leader'.encode(), (self.mulGroup, self.port))
 
@@ -249,9 +245,6 @@ class Server:
                 returnMessage = 'Invalid request'
                 return
 
-        if self.delayOn:
-            delay = randint(a=5, b=10)
-            sleep(delay)
         if self.isLeader:
             print(f'Sending response and closing thread\n')
             connSocket.sendto(returnMessage.encode(), (dest,port))
@@ -447,14 +440,8 @@ if __name__ == "__main__":
     except IndexError:
         id = os.getpid()
 
-    # Find value for pid if it's passed in, if not assign one
-    try:
-        delay = sys.argv[4]
-    except IndexError:
-        delay = True
-
     # Start server
-    server = Server(portNum=port_num, mulIP=mulCastIP, pid=id, delay=delay)
+    server = Server(portNum=port_num, mulIP=mulCastIP, pid=id)
     try:
         data = server.start()
         if data:

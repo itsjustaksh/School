@@ -98,7 +98,7 @@ def client_packet_send(destAddr: str, destPort: int, message: str, clientSocket:
 def start_client_UI(destAddr, destPort, test):
     global ID
     if not os.path.isdir(f'.cache\\{ID}'):
-        os.makedirs('.cache')
+        os.makedirs(f'.cache\\{ID}', exist_ok=True)
     # Sequence of messages to test with
     messages = ['cars', 'dates', 'check BMWX1', 'reserve BMWX1 Wednesday-2023-02-08', 'check BMWX1',
                 'delete BMWX1 Wednesday-2023-02-08', 'check BMWX1', 'reserve BMWX1 Sunday-2023-02-19', 
@@ -107,7 +107,7 @@ def start_client_UI(destAddr, destPort, test):
 
     # Init socket
     clientSocket = socket(AF_INET, SOCK_DGRAM)
-    clientSocket.settimeout(11)
+    clientSocket.settimeout(5)
 
     # Start comms
     if test:
@@ -150,8 +150,12 @@ if __name__ == "__main__":
     try:
         start_client_UI(destAddr, destPort, test)
     except KeyboardInterrupt:
+        print('Shutting Down, goodbye!')
         try:
             shutil.rmtree(f'.cache\\{ID}', False)
+            if len(os.listdir('.cache')) <= 0:
+                shutil.rmtree(f'.cache', False)
+            print('Cache deleted')
             exit(0)
         except Exception as e:
             exit(1)
