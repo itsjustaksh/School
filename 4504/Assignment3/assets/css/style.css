@@ -199,7 +199,7 @@ table{
 
 #login-form input{
    display: block;
-   margin-left: 1em;
+   margin: .5em auto;
    height: 2em;
    width: 80%;
    max-width: 15rem;

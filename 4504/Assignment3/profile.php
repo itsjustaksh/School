@@ -16,7 +16,7 @@
   <script>
     <?php
     $currID = (isset($_SESSION['id'])) ? $_SESSION['id'] : '';
-    $currAdmin = (isset($_SESSION['admin'])) ? 'True' : 'False';
+    $currAdmin = (isset($_SESSION['admin'])) ? $_SESSION['admin'] : 'False';
     ?>
     let id = "<?php echo($currID); ?>";
     let admin = "<?php echo($currAdmin); ?>";

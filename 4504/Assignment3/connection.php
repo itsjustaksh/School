@@ -191,7 +191,6 @@ function processProfile()
 function showPosts()
 {
     if (isset($_SESSION['id'])) {
-        echo($_SESSION['admin']);
         $conn = connect();
         $postQuery = "SELECT * FROM users_posts ORDER BY post_id DESC LIMIT 10";
         $results = $conn->query($postQuery);
@@ -275,7 +274,7 @@ function processLogin(){
                 $_SESSION['id'] = $idRes['student_id'];
             }
             else {
-                echo("<p class='error-message'>Email/password does not match</p>");
+                echo("<p class='error-message center'>Email/password does not match</p>");
                 unset($_SESSION['id']);
 
                 return;
