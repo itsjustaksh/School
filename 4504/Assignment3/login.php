@@ -64,6 +64,7 @@
                         </label>
                         <input type="password" name="password-box" id="password-box" placeholder="********">
                         <input id="submit-login" type="submit" value="Login" name="login">
+                        <input id="register-btn" type="submit" value="Register" name="register">
                     </div>
                 </fieldset>
             </form>

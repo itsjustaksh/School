@@ -246,6 +246,10 @@ function processLogin(){
         header('Location: logout.php');
     }
 
+    if(isset($_POST['register'])){
+        header('Location: register.php');
+    }
+
     // If attempting to log in, gather info
     if (isset($_POST['login-email'])){
         
