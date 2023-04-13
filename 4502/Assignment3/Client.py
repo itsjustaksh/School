@@ -149,6 +149,12 @@ if __name__ == "__main__":
         test = False
     try:
         start_client_UI(destAddr, destPort, test)
+
+        shutil.rmtree(f'.cache\\{ID}', False)
+        if len(os.listdir('.cache')) <= 0:
+            shutil.rmtree(f'.cache', False)
+        print('Cache deleted')
+        exit(0)
     except KeyboardInterrupt:
         print('Shutting Down, goodbye!')
         try:
