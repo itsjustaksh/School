@@ -3,15 +3,13 @@
 # Author: Aksh Ravishankar
 
 # Imports
-from random import randint
 import random
 from socket import *
 import struct
-from threading import Lock, Thread, Event, get_native_id
+from threading import Lock, Thread, Event
 import sys, os
 from time import sleep, time
 import traceback
-from turtle import delay
 
 event = Event()
 dataLock = Lock()
