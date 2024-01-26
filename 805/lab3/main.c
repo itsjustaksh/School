@@ -9,13 +9,12 @@ int main()
    char largest;
    const char exitStr = 'X';
 
-   printf("Enter some text, enter 'X' to exit: \n");
+   printf("Enter some chars, enter 'X' to exit: \n");
    while (str != exitStr)
    {
       scanf("%c", &str);
       if (str > largest){
          largest = str;
-         printf("Largest: %c\n", largest);
       }
    }
    printf("Longest entered string: %c\n", largest);
