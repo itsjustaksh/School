@@ -741,9 +741,11 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,windows,visualstudiocode,python,c,c++,java,node,angular,reactnative,react
 
-# Personal additions 
+# Personal additions
 Random/
 4502/Sandbox
 
 4415/Assignment 3/SYSC4415W23_A3_dataset.zip
 4415/Assignment 3/SYSC4415W23_A3_dataset
+805/other
+805/other/**
